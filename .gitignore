@@ -19,5 +19,36 @@
 *.tar.gz
 *.rar
 
+# Librarieis and binaries
+[Bb]in
+*.lib
+*.a
+*.la
+*.lai
+*.lo
+*.slo
+*.dll
+*.so
+*.so.*
+*.dylib
+/target
+target/
+
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+.cproject
+.project
+.settings
+.classpath
+
+.vs/
+packages/
+
+#eclipse
+.metadata
+.metadata.new
+.pydevproject
+.recommenders
+Debug
