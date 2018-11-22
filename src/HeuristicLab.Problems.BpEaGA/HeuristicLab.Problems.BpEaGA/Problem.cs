@@ -81,7 +81,7 @@ namespace HeuristicLab.Problems.BpEaGA
             Parameters.Add(new ValueParameter<EnemyCollection>(EnemiesParameterName, "The enemies that should be battled.", robotList));
             Parameters.Add(new ValueParameter<FeatureCollection>(FeaturesParameterName, "The enemies that should be battled.", features));
 
-            Encoding = new RealVectorEncoding("FeaturesWeights", 1, new List<double>{-5}, new List<double>{5});
+            Encoding = new RealVectorEncoding("FeaturesWeights", 1, new List<double>{0}, new List<double>{5});
 
             RegisterEventHandlers();
         }

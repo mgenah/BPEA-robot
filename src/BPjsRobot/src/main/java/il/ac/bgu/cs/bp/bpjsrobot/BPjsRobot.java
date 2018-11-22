@@ -4,14 +4,18 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.Vector;
 
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
+import il.ac.bgu.cs.bp.bpjs.model.BProgram;
 import il.ac.bgu.cs.bp.bpjs.model.SingleResourceBProgram;
+import il.ac.bgu.cs.bp.bpjs.model.StringBProgram;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpHitWallEvent;
@@ -28,7 +32,7 @@ import robocode.WinEvent;
 import robocode.util.Utils;
 
 public class BPjsRobot extends AdvancedRobot {
-	SingleResourceBProgram bprog;
+	BProgram bprog;
 	public AntiGravity antiGravity;
 	public WallSmoothing wallSmooth;
 	public LinearTargeting linearTargeting;
@@ -51,7 +55,13 @@ public class BPjsRobot extends AdvancedRobot {
 //		linearTargeting.setFieldWidth(fieldWidth);		
 		
 		out.println("Starting to run robot");
-		bprog = new SingleResourceBProgram("BPEARobot.js");
+		try {
+			String bProgramData = getBProgramData();
+			bprog = new StringBProgram(bProgramData);
+		} catch (FileNotFoundException e1) {
+			System.out.println("Failed to find BProgram file.");
+			return;
+		}
 		File logFile = new File("c:\\temp\\robocodeRun.log");
 		PrintWriter anOut;
 		try {
@@ -72,12 +82,18 @@ public class BPjsRobot extends AdvancedRobot {
 		System.out.println("---- done -----");
 	}
 	
-//	@Override
-//	public void execute() {
-//		out.println("starting to execute");
-//		super.execute();
-//		out.println("finished executing");
-//	}
+	private String getBProgramData() throws FileNotFoundException {
+		File dataFile = getDataFile("BPEARobot.js");
+		System.out.println(dataFile.getAbsolutePath());
+	    StringBuilder fileContents = new StringBuilder((int)dataFile.length());        
+
+	    try (Scanner scanner = new Scanner(dataFile)) {
+	        while(scanner.hasNextLine()) {
+	            fileContents.append(scanner.nextLine() + System.lineSeparator());
+	        }
+	        return fileContents.toString();
+	    }
+	}
 	
 	@Override
 	public void onStatus(StatusEvent e) {

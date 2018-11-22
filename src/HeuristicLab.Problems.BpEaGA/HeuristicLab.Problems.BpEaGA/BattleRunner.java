@@ -1,5 +1,13 @@
 import robocode.control.*;
 import robocode.control.events.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import java.io.PrintWriter;
 import java.util.*;
 
 public class BattleRunner {
@@ -24,6 +32,15 @@ public class BattleRunner {
       robots[i - 3] = args[i];
     }
 
+    File logFile = new File("c:\\temp\\battleRunner.log");
+    PrintWriter anOut;
+	try {
+		anOut = new PrintWriter(logFile);
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		anOut = new PrintWriter(System.out);
+	}
     RobocodeEngine.setLogMessagesEnabled(false);
     RobocodeEngine engine = new RobocodeEngine(new java.io.File(roboCodePath));
     engine.setVisible(visible);
@@ -33,13 +50,17 @@ public class BattleRunner {
     RobotSpecification[] all = engine.getLocalRepository();
     List<RobotSpecification> selectedRobots = new ArrayList<RobotSpecification>();
     
+    anOut.println("Supported robots:");
     for(RobotSpecification rs : all) {
-      for(String r : robots) {
-        if(r.equals(rs.getClassName())) {
-          selectedRobots.add(rs);
-        }
-      }
+    	anOut.println(rs.getClassName());
+    	for(String r : robots) {
+    		if(r.equals(rs.getClassName())) {
+    			selectedRobots.add(rs);
+    		}
+    	}
     }
+    
+    anOut.println("*********************");
 
     for (int i = 1; i < selectedRobots.size(); i++) {
       BattleSpecification battleSpec = new BattleSpecification(numberOfRounds, battlefield, new RobotSpecification[] { selectedRobots.get(0), selectedRobots.get(i) });
@@ -48,6 +69,7 @@ public class BattleRunner {
       engine.runBattle(battleSpec, true);
     }
     engine.close();
+    anOut.flush();
 
     System.out.println(avg(score));
     System.exit(0);
@@ -67,12 +89,27 @@ class BattleObserver extends BattleAdaptor {
     double robotScore = -1.0;
     double opponentScore = -1.0;
     
-	for (robocode.BattleResults result : e.getSortedResults()) {
-		if (result.getTeamLeaderName().contains(BattleRunner.player)) 
-			robotScore = result.getScore();
-		else
-			opponentScore = result.getScore();
+    File logFile = new File("c:\\temp\\battleRunner.log");
+    PrintWriter anOut;
+	try {
+		anOut = new PrintWriter(logFile);
+	} catch (FileNotFoundException ex) {
+		// TODO Auto-generated catch block
+		ex.printStackTrace();
+		anOut = new PrintWriter(System.out);
 	}
+    
+	for (robocode.BattleResults result : e.getSortedResults()) {
+		if (result.getTeamLeaderName().contains(BattleRunner.player)) {
+			anOut.println("Result of robot: " + BattleRunner.player + " " + result.getScore());
+			robotScore = result.getScore();
+		} else {
+			anOut.println("Result of opponent: " + result.getScore());
+			opponentScore = result.getScore();
+		}
+	}
+	
+	anOut.flush();
     
     // prevent div 0 which can happen if both robots do not score
     if((robotScore + opponentScore) == 0) {

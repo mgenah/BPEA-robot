@@ -21,7 +21,7 @@ namespace HeuristicLab.Problems.BpEaGA
             String indStr = "";
             for (int i = 0; i < featureWeights.Length; i++)
             {
-                indStr += featureWeights[i] + "*" + features.ToArray()[i];
+                indStr += featureWeights[i] + "*" + features.ToArray()[i].Name;
             }
 
             return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robotName);
