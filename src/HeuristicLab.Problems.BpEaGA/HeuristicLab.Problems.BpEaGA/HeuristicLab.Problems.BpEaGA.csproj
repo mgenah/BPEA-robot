@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="EnemyCollection.cs" />
     <Compile Include="FeatureCollection.cs" />
+    <Compile Include="FeatureGaEncoding.cs" />
     <Compile Include="FeatureType.cs" />
     <Compile Include="Problem.cs" />
     <Compile Include="Robot.cs" />

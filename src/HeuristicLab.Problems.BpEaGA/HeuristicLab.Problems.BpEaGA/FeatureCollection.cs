@@ -1,4 +1,5 @@
-﻿using HeuristicLab.Common;
+﻿using System;
+using HeuristicLab.Common;
 using HeuristicLab.Core;
 using HeuristicLab.Data;
 using HeuristicLab.Persistence.Default.CompositeSerializers.Storable;
@@ -22,11 +23,17 @@ namespace HeuristicLab.Problems.BpEaGA
             return new FeatureCollection(this, cloner);
         }
 
-        public static FeatureCollection ReloadFeatures(string robocodeDir)
+        public static FeatureCollection ReloadFeatures(DateTime time)
         {
             FeatureCollection features = new FeatureCollection();
-            FeatureType feature1 = new FeatureType(new IntValue(-1), new IntValue(1), new StringValue("Fire"));
-            features.Add(feature1);
+            features.Add(new FeatureType(0, 1, "fire"));
+            features.Add(new FeatureType(0, 1, "power"));
+            features.Add(new FeatureType(-1, 1, "intelligence"));
+            features.Add(new FeatureType(-1, 1, "strategy"));
+            features.Add(new FeatureType(-1, 1, "completeOp"));
+            features.Add(new FeatureType(-1, 1, "ram"));
+            features.Add(new FeatureType(-1, 1, "aim"));
+            features.Add(new FeatureType(-1, 1, "avoidHit"));
 
             return features;
         }

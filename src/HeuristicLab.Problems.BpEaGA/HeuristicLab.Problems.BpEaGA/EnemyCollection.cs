@@ -25,7 +25,7 @@ namespace HeuristicLab.Problems.BpEaGA
         {
             RobocodePath = original.RobocodePath;
         }
-        public EnemyCollection() : base() { }
+        public EnemyCollection() { }
 
         public override IDeepCloneable Clone(Cloner cloner)
         {

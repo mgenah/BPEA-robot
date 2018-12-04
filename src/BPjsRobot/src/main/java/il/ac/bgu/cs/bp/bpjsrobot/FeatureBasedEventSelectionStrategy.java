@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
@@ -70,10 +71,15 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
 		NativeObject data = (NativeObject) statement.getData();
 		Map<String, Double> vars = new HashMap<>();
 		if (data != null){
-			String name = (String)data.get("name");
-			double value = (double)data.get("value");
-			RobocodeFeature feature = new RobocodeFeature(name, value);
-			vars.put(feature.getName(), feature.getValue());
+			NativeArray dataArray = (NativeArray)(data.get("features"));
+			dataArray.forEach(obj->{
+				NativeObject featureData = (NativeObject)obj;
+				String name = (String)featureData.get("name");
+				double value = (double)featureData.get("value");
+				RobocodeFeature feature = new RobocodeFeature(name, value);
+				vars.put(feature.getName(), feature.getValue());
+				System.out.println(name+": "+value);
+			});
 		}
 		supportedFeatures.forEach(f->vars.putIfAbsent(f, 0.0));
 		return vars;

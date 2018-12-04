@@ -43,10 +43,10 @@ namespace HeuristicLab.Problems.BpEaGA
             // 
             this.NameView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-            this.NameView.Text = null;
+            this.NameView.Text = "&Name:";
             this.NameView.Location = new System.Drawing.Point(58, 0);
             this.NameView.Name = "NameView";
-            this.NameView.ReadOnly = true;
+            this.NameView.ReadOnly = false;
             this.NameView.Size = new System.Drawing.Size(268, 20);
             this.NameView.TabIndex = 0;
 

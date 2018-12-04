@@ -19,23 +19,26 @@ namespace HeuristicLab.Problems.BpEaGA
             RealVector realVector = individual.RealVector();
             double[] featureWeights = realVector.ToArray();
             String indStr = "";
-            for (int i = 0; i < featureWeights.Length; i++)
+            for (int i = 0; i < features.Count ; i++)
             {
-                indStr += featureWeights[i] + "*" + features.ToArray()[i].Name;
+                indStr += featureWeights[0] + "*" + features.CheckedItems.ToArray()[i].Value.Name;
+                if (i < features.Count - 1)
+                {
+                    indStr += "+";
+                }
             }
 
-            return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robotName);
+            return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robot.Name, enemies.ToArray()[0].Value, robotName, nrOfRounds);
         }
 
-        private static double RunGamesLocaly(string path, string tree, string robotName)
+        private static double RunGamesLocaly(string path, string tree, String robot, String enemy, string robotName, int nrOfRounds)
         {
             string robotsPath = Path.Combine(path, "robots", "Evaluation");
             string srcRobotPath = Path.Combine(robotsPath, robotName + ".txt");
-
             File.WriteAllText(srcRobotPath, tree, Encoding.Default);
             return Double.Parse(ProcessUtils.ExecuteCommand(
-                @"C:\Studies\Thesis\Project\bp-ea\src\HeuristicLab.Problems.BpEa\HeuristicLab.Problems.BpEa\runBattle.bat",
-                ""));
+                @"C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA\runBattle.bat",
+                robot, enemy, ""+nrOfRounds));
         }
 
         private static double RunGamesRemotely(string tree, string robotName)
@@ -77,7 +80,7 @@ namespace HeuristicLab.Problems.BpEaGA
             outputname = outputname.Remove(16, 1);
             outputname = outputname.Remove(20, 1);
             outputname = outputname.Remove(0, 1);
-            outputname = outputname.Insert(0, "R");
+            outputname = outputname.Insert(0, "robot");
             return outputname;
         }
     }

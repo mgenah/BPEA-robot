@@ -49,41 +49,30 @@ var RobotDeath = bp.EventSet('', function(e) {
 	return (e instanceof BpRobotDeathEvent);
 });
 
-/*bp.registerBThread("attempt", function() {
-	while (true){
-		bp.log.info('Requesting to go ahead');
-		bp.sync({ request : bp.Event("Ahead")});
-		bp.log.info('Requested to go ahead');
-	}
-});
-*/
-
 bp.registerBThread("SmartRadarSpin",function() {
 	while (true){
-//	var i;
-//	for(i=0;i<5;i++){
 		if (targetIsDead){
 			break;
 		}
 		
 		if (targetflag==false){
 		    bp.log.info('Running radar scan false');
-			bp.sync({ request : TurnRadarRight(10)}, {name:"fire",value:42.1});
+			bp.sync({ request : TurnRadarRight(10)}, {features:[{name:"intelligence",value:1.0}]});
 			bp.log.info('Running radar scan false 222');
-			bp.sync({ waitFor : RadRevend });
+			bp.sync({ waitFor : RadRevend }, {features:[{name:"intelligence",value:1},{name:"completeOp",value:1}]});
 			bp.log.info('radar stopped moving');
 		}
 		if (targetflag==true){
 			bp.log.info('Running radar scan true');
 			if (firsttimescanned == 0){
 				if (targetBear != null){
-					bp.sync({ request : TurnRadarLeft(targetBear)});
-					bp.sync({ waitFor : RadRevend });
+					bp.sync({ request : TurnRadarLeft(targetBear)}, {features:[{name:"intelligence",value:1}]});
+					bp.sync({ waitFor : RadRevend }, {features:[{name:"intelligence",value:1},{name:"completeOp",value:1}]});
 					firsttimescanned=1;
 				}
 			}
-			bp.sync({ request : TurnRadarLeft(10)});
-			bp.sync({ waitFor : RadRevend });
+			bp.sync({ request : TurnRadarLeft(10)}, {features:[{name:"intelligence",value:1}]});
+			bp.sync({ waitFor : RadRevend }, {features:[{name:"intelligence",value:1},{name:"completeOp",value:1}]});
 			//bp.sync({ request : TurnRadarRight(50)});
 			//bp.sync({ waitFor : RadRevend });
 		}
@@ -97,7 +86,7 @@ bp.registerBThread("IsThereAny Target",function() {
 		if (targetIsDead){
 			break;
 		}
-		var e = bp.sync({ waitFor : Scanned });
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 		
 		bp.log.info('Any target b-thread: found target');
 		var bear=e.getData().getBearing();
@@ -109,52 +98,51 @@ bp.registerBThread("IsThereAny Target",function() {
 	}
 });
 
-
 bp.registerBThread("Go To Target",function() {
 	while(true){
 		bp.log.info('Running go for target b-thread');
-		var e = bp.sync({ waitFor : Scanned });	
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});	
 	    targetBear=e.getData().getBearing();
 		var targetDist=e.getData().getDistance();
 		bp.log.info("targetBear="+targetBear);
 		bp.log.info("targetDist="+targetDist);
 		
-		bp.sync({ request : TurnRight(targetBear)});
-		bp.sync({ waitFor : Revend });
-		bp.sync({ request : Back(10) });
-		bp.sync({ waitFor : Motiend });
-		bp.sync({ request : Ahead(targetDist) });
-		bp.sync({ waitFor : Motiend });
+		bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"ram",value:0.75}]});
+		bp.sync({ waitFor : Revend }, {features:[{name:"ram",value:0.75},{name:"completeOp",value:1}]});
+		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2},{name:"completeOp",value:1}]});
+		bp.sync({ request : Ahead(targetDist) }, {features:[{name:"ram",value:1}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:1},{name:"completeOp",value:1}]});
 	}
 });
 
 bp.registerBThread("Ram target", function() {
 	while(true){
 		bp.log.info('Running ram target b-thread');
-		var e = bp.sync({ waitFor : Scanned });	
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 	    targetBear=e.getData().getBearing();
 		var targetDist=e.getData().getDistance();
 		bp.log.info("targetBear="+targetBear);
 		bp.log.info("targetDist="+targetDist);
 		
-		bp.sync({ request : TurnRight(targetBear)});
-		bp.sync({ waitFor : Revend });
-		bp.sync({ request : Back(10) });
-		bp.sync({ waitFor : Motiend });
-		bp.sync({ request : Ahead(targetDist) });
-		bp.sync({ waitFor : Motiend });
+		bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"ram",value:0.75},{name:"aim",value:0.75}]});
+		bp.sync({ waitFor : Revend }, {features:[{name:"ram",value:0.75},{name:"aim",value:0.75},{name:"completeOp",value:1}]});
+		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2},{name:"completeOp",value:1}]});
+		bp.sync({ request : Ahead(targetDist) }, {features:[{name:"ram",value:1}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:1},{name:"completeOp",value:1}]});
 	}
 });
 
 bp.registerBThread("Aim Target",function() {
-	var e = bp.sync({ waitFor : Scanned });	
+	var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
     targetBear=e.getData().getBearing();
 	var targetDist=e.getData().getDistance();
 	bp.log.info("targetBear="+targetBear);
 	bp.log.info("targetDist="+targetDist);
 	
-	bp.sync({ request : TurnRight(targetBear)});
-	bp.sync({ waitFor : Revend });
+	bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2}]});
+	bp.sync({ waitFor : Revend }, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2},{name:"completeOp",value:1}]});
 });
 
 bp.registerBThread(function() {
@@ -163,10 +151,10 @@ bp.registerBThread(function() {
 		if (targetIsDead){
 			break;
 		}
-		var e = bp.sync({ waitFor : Scanned });
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 		bp.log.info('Continuing fire-on-scan b-thread');
 		var energy = e.getData().getEnergy();
-		bp.sync({ request : Fire(50.0) });
+		bp.sync({ request : Fire(50.0) }, {features:[{name:"fire",value:1},{name:"power",value:0.2}]});
 	}
 });
 
@@ -176,7 +164,7 @@ bp.registerBThread("Wall Smoothing", function() {
 		if (targetIsDead){
 			break;
 		}
-		var e = bp.sync({ waitFor : Scanned });
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 		bp.log.info('Continuing wall smoothing b-thread');
 		
 		var angleToEnemy = e.getData().getBearing();
@@ -190,12 +178,12 @@ bp.registerBThread("Wall Smoothing", function() {
         var targetPoint = robot.wallSmooth.calc(enemyX, enemyY, robot.getX(), robot.getY(), robot.getHeading());
 		var actions = robot.goTo(targetPoint.getX(), targetPoint.getY());
 		if (actions.Ahead != 0){
-			bp.sync({ request : Ahead(actions.Ahead) });
-			bp.sync({ waitFor : Motiend });
+			bp.sync({ request : Ahead(actions.Ahead) }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8}]});
+			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8},{name:"completeOp",value:1}]});
 		}
 		if (actions.TurnRightRadians != 0){
-			bp.sync({ request : TurnRightRadians(actions.TurnRightRadians) });
-			bp.sync({ waitFor : Motiend });
+			bp.sync({ request : TurnRightRadians(actions.TurnRightRadians) }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8}]});
+			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8},{name:"completeOp",value:1}]});
 		}
 	}
 });
@@ -238,7 +226,7 @@ bp.registerBThread("Linear Targeting", function() {
 
 bp.registerBThread("identify enemy death", function() {
 	bp.log.info('Running identify enemy death b-thread');
-	bp.sync({ waitFor : RobotDeath });
+	bp.sync({ waitFor : RobotDeath }, {features:[{name:"intelligence",value:1},{name:"power",value:0.8}]});
 	bp.log.info('Continuing identify enemy death b-thread');
 	targetIsDead = true;
 });

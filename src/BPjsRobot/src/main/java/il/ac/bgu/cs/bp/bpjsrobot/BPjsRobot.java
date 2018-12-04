@@ -2,6 +2,7 @@ package il.ac.bgu.cs.bp.bpjsrobot;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -36,12 +38,13 @@ public class BPjsRobot extends AdvancedRobot {
 	public AntiGravity antiGravity;
 	public WallSmoothing wallSmooth;
 	public LinearTargeting linearTargeting;
+	public List<String> supportedFeatures = Arrays.asList("power", "fire", "intelligence", "strategy","completeOp","ram","aim","avoidHit");
 	
 	public BPjsRobot(){
 		super();
 		antiGravity = new AntiGravity();
 		wallSmooth = new WallSmoothing();
-//		linearTargeting = new LinearTargeting();
+		linearTargeting = new LinearTargeting();
 	}
 
 	public void run() {
@@ -51,8 +54,8 @@ public class BPjsRobot extends AdvancedRobot {
 		wallSmooth.setFieldWidth(fieldWidth);
 		antiGravity.setFieldHeight(fieldHeight);
 		antiGravity.setFieldWidth(fieldWidth);
-//		linearTargeting.setFieldHeight(fieldHeight);
-//		linearTargeting.setFieldWidth(fieldWidth);		
+		linearTargeting.setFieldHeight(fieldHeight);
+		linearTargeting.setFieldWidth(fieldWidth);		
 		
 		out.println("Starting to run robot");
 		try {
@@ -67,11 +70,18 @@ public class BPjsRobot extends AdvancedRobot {
 		try {
 			anOut = new PrintWriter(logFile);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			anOut = new PrintWriter(out);
 		}
-		bprog.setEventSelectionStrategy(/*new SimpleEventSelectionStrategy()*/new LoggingEventSelectionStrategyDecorator(new FeatureBasedEventSelectionStrategy(Arrays.asList("fire"), "fire*5")/*new SimpleEventSelectionStrategy()*/, anOut));
+
+		String policy;
+		try{
+			policy = getFeatureBasedPolicy();
+		} catch (FileNotFoundException e1) {
+			System.out.println("Failed to find policy file.");
+			return;
+		}
+		bprog.setEventSelectionStrategy(new LoggingEventSelectionStrategyDecorator(new FeatureBasedEventSelectionStrategy(supportedFeatures, policy), anOut));
 		bprog.putInGlobalScope("robot", this);
 		out.println("Created bprog");
 		bprog.setDaemonMode(true);
@@ -83,7 +93,26 @@ public class BPjsRobot extends AdvancedRobot {
 	}
 	
 	private String getBProgramData() throws FileNotFoundException {
-		File dataFile = getDataFile("BPEARobot.js");
+		return readFileToString("BPEARobot.js");
+	}
+	
+	private String getFeatureBasedPolicy() throws FileNotFoundException {
+		File dataDirectory = getDataDirectory();
+		FileFilter fileFilter = new FileFilter(){
+			@Override
+			public boolean accept(File file) {
+				return file.getName().startsWith("robot");
+			}			
+		};
+		File[] listFiles = dataDirectory.listFiles(fileFilter);
+		if (listFiles.length == 0){
+			throw new FileNotFoundException();
+		}
+		return readFileToString(listFiles[0].getName());
+	}
+	
+	private String readFileToString(String fileName) throws FileNotFoundException{
+		File dataFile = getDataFile(fileName);
 		System.out.println(dataFile.getAbsolutePath());
 	    StringBuilder fileContents = new StringBuilder((int)dataFile.length());        
 

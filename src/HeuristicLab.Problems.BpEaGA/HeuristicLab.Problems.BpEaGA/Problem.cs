@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HeuristicLab.Common;
 using HeuristicLab.Core;
 using HeuristicLab.Data;
@@ -14,13 +15,16 @@ namespace HeuristicLab.Problems.BpEaGA
     [Item("Robocode Problem", "Evolution of a robocode program in java using genetic programming.")]
     public class Problem : SingleObjectiveBasicProblem<RealVectorEncoding>
     {
+        protected ILog log;
+        public ILog Log {
+            get { return log; }
+        }
         #region Parameter Names
         private const string RobocodePathParamaterName = "RobocodePath";
         private const string NrOfRoundsParameterName = "NrOfRounds";
         private const string EnemiesParameterName = "Enemies";
         private const string FeaturesParameterName = "Features";
-        private readonly IList<Robot> enemies;
-        private readonly Robot robot = new Robot("BPjsRobot", "il.ac.bgu.cs.bp.bpjsrobot.BPjsRobot");
+        private readonly Robot robot = new Robot("BPjsRobot", "il.ac.bgu.cs.bp.bpjsrobot.BPjsRobot_1.0");
 
         #endregion
 
@@ -65,15 +69,17 @@ namespace HeuristicLab.Problems.BpEaGA
         protected Problem(Problem original, Cloner cloner)
           : base(original, cloner)
         {
+            log = cloner.Clone(original.log);
             RegisterEventHandlers();
         }
 
         public Problem()
         {
+            log = new Log();
             DirectoryValue robocodeDir = new DirectoryValue { Value = @"c:\Thesis\robocode" };
 
             EnemyCollection robotList = EnemyCollection.ReloadEnemies(robocodeDir.Value);
-            FeatureCollection features = FeatureCollection.ReloadFeatures("");
+            FeatureCollection features = FeatureCollection.ReloadFeatures(DateTime.Now);
             robotList.RobocodePath = robocodeDir.Value;
 
             Parameters.Add(new FixedValueParameter<DirectoryValue>(RobocodePathParamaterName, "Path of the Robocode installation.", robocodeDir));
@@ -81,7 +87,7 @@ namespace HeuristicLab.Problems.BpEaGA
             Parameters.Add(new ValueParameter<EnemyCollection>(EnemiesParameterName, "The enemies that should be battled.", robotList));
             Parameters.Add(new ValueParameter<FeatureCollection>(FeaturesParameterName, "The enemies that should be battled.", features));
 
-            Encoding = new RealVectorEncoding("FeaturesWeights", 1, new List<double>{0}, new List<double>{5});
+            Encoding = new RealVectorEncoding("FeaturesWeights", 1, new List<double>{0,0,0,0,0,0,0,0}, new List<double>{1,1,1,1,1,1,1,1});
 
             RegisterEventHandlers();
         }
@@ -108,7 +114,7 @@ namespace HeuristicLab.Problems.BpEaGA
             RobocodePathParameter.Value.StringValue.ValueChanged += RobocodePathParameter_ValueChanged;
         }
 
-        void RobocodePathParameter_ValueChanged(object sender, System.EventArgs e)
+        void RobocodePathParameter_ValueChanged(object sender, EventArgs e)
         {
             EnemiesParameter.Value.RobocodePath = RobocodePathParameter.Value.Value;
         }

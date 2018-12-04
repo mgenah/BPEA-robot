@@ -7,11 +7,10 @@ namespace HeuristicLab.Problems.BpEaGA
 {
     [Item("Feature", "A collection of enemy robots for the Robocode genetic programming problem.")]
     [StorableClass]
-    public class FeatureType : Item
+    public class FeatureType : NamedItem
     {
-        private IntValue min;
-        private IntValue max;
-        private StringValue name;
+        private IntValue min = new IntValue();
+        private IntValue max = new IntValue();
 
         [Storable]
         public IntValue Min {
@@ -25,25 +24,19 @@ namespace HeuristicLab.Problems.BpEaGA
             private set { this.max = value; }
         }
 
-        [Storable]
-        public StringValue Name {
-            get { return name; }
-            private set { this.name = value; }
-        }
-
         [StorableConstructor]
         protected FeatureType(bool deserializing) : base(deserializing) { }
-        public FeatureType(IntValue min, IntValue max, StringValue name)
+        public FeatureType(int min, int max, string name)
+            : base(name)
         {
-            this.Min = min;
-            this.Max = max;
-            this.Name = name;
+            this.Min = new IntValue(min);
+            this.Max = new IntValue(max);
         }
         protected FeatureType(FeatureType original, Cloner cloner)
           : base(original, cloner)
         {
         }
-        public FeatureType() : base() { }
+        public FeatureType() { }
 
         public override IDeepCloneable Clone(Cloner cloner)
         {
