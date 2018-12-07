@@ -4,34 +4,34 @@ using HeuristicLab.Core;
 using HeuristicLab.Data;
 using HeuristicLab.Persistence.Default.CompositeSerializers.Storable;
 
-namespace HeuristicLab.Encoding.BpEa.RealVector
+namespace HeuristicLab.Encodings.BpEa.RealVector
 {
     [StorableClass]
-    [Item("BpEaRealVector", "Represents a vector of real values.")]
-    public class BpEaRealVector :RealVector
+    [Item("BpEaRealVector", "Represents a BP EA vector of real values.")]
+    public class BpEaRealVector : Encodings.RealVectorEncoding.RealVector
     {
         [StorableConstructor]
-        protected RealVector(bool deserializing) : base(deserializing) { }
-        protected RealVector(RealVector original, Cloner cloner) : base(original, cloner) { }
-        public RealVector() : base() { }
-        public RealVector(int length) : base(length) { }
-        public RealVector(int length, IRandom random, double min, double max)
+        protected BpEaRealVector(bool deserializing) : base(deserializing) { }
+        protected BpEaRealVector(BpEaRealVector original, Cloner cloner) : base(original, cloner) { }
+        public BpEaRealVector() : base() { }
+        public BpEaRealVector(int length) : base(length) { }
+        public BpEaRealVector(int length, IRandom random, double min, double max)
           : this(length)
         {
             Randomize(random, min, max);
         }
-        public RealVector(double[] elements) : base(elements) { }
-        public RealVector(DoubleArray elements)
+        public BpEaRealVector(double[] elements) : base(elements) { }
+        public BpEaRealVector(DoubleArray elements)
           : this(elements.Length)
         {
             for (int i = 0; i < array.Length; i++)
                 array[i] = elements[i];
         }
-        public RealVector(RealVector other) : this(other.array) { }
+        public BpEaRealVector(BpEaRealVector other) : this(other.array) { }
 
         public override IDeepCloneable Clone(Cloner cloner)
         {
-            return new RealVector(this, cloner);
+            return new BpEaRealVector(this, cloner);
         }
 
         public virtual void Randomize(IRandom random, int startIndex, int length, double min, double max)
@@ -69,7 +69,7 @@ namespace HeuristicLab.Encoding.BpEa.RealVector
             Randomize(random, 0, Length, bounds);
         }
 
-        public double DotProduct(RealVector other)
+        public double DotProduct(BpEaRealVector other)
         {
             if (other.Length != Length) throw new ArgumentException("Vectors are of unequal length.");
             var dotProd = 0.0;

@@ -56,10 +56,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Studies\Thesis\Project\HL\HeuristicLab-master\bin\HeuristicLab.Encodings.RealVectorEncoding-3.3.dll</HintPath>
     </Reference>
-    <Reference Include="HeuristicLab.Encodings.SymbolicExpressionTreeEncoding-3.4">
-      <HintPath>..\..\..\..\HL\HeuristicLab-master\bin\HeuristicLab.Encodings.SymbolicExpressionTreeEncoding-3.4.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="HeuristicLab.MainForm-3.3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=ba48961d6f65dcec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\HL\HeuristicLab-master\bin\HeuristicLab.MainForm-3.3.dll</HintPath>
@@ -115,17 +111,10 @@
     <Compile Include="Robot.cs" />
     <Compile Include="SshUtils.cs" />
     <Compile Include="ProcessUtils.cs" />
-    <Compile Include="Symbols\FeatureTreeNode.cs" />
-    <Compile Include="Symbols\Feature.cs" />
-    <Compile Include="Grammar.cs" />
     <Compile Include="Interperter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Solution.cs" />
-    <Compile Include="Symbols\BooleanTreeNode.cs" />
-    <Compile Include="Symbols\BooleanValue.cs" />
-    <Compile Include="Symbols\Number.cs" />
-    <Compile Include="Symbols\NumberTreeNode.cs" />
     <Compile Include="FeatureTypeView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -135,6 +124,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HeuristicLab.Encodings.BpEa.RealVector\HeuristicLab.Encodings.BpEa.RealVector.csproj">
+      <Project>{51a67ce7-8286-4df1-889d-2e222d585084}</Project>
+      <Name>HeuristicLab.Encodings.BpEa.RealVector</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using HeuristicLab.Common;
 using HeuristicLab.Core;
 using HeuristicLab.Data;
-using HeuristicLab.Encodings.RealVectorEncoding;
+using HeuristicLab.Encodings.BpEa.RealVector;
 using HeuristicLab.Optimization;
 using HeuristicLab.Parameters;
 using HeuristicLab.Persistence.Default.CompositeSerializers.Storable;
@@ -13,7 +13,7 @@ namespace HeuristicLab.Problems.BpEaGA
     [StorableClass]
     [Creatable(CreatableAttribute.Categories.GeneticProgrammingProblems, Priority = 360)]
     [Item("Robocode Problem", "Evolution of a robocode program in java using genetic programming.")]
-    public class Problem : SingleObjectiveBasicProblem<RealVectorEncoding>
+    public class Problem : SingleObjectiveBasicProblem<BpEaRealVectorEncoding>
     {
         protected ILog log;
         public ILog Log {
@@ -87,7 +87,7 @@ namespace HeuristicLab.Problems.BpEaGA
             Parameters.Add(new ValueParameter<EnemyCollection>(EnemiesParameterName, "The enemies that should be battled.", robotList));
             Parameters.Add(new ValueParameter<FeatureCollection>(FeaturesParameterName, "The enemies that should be battled.", features));
 
-            Encoding = new RealVectorEncoding("FeaturesWeights", 1, new List<double>{0,0,0,0,0,0,0,0}, new List<double>{1,1,1,1,1,1,1,1});
+            Encoding = new BpEaRealVectorEncoding("FeaturesWeights", 1, new List<double>{0,0,0,0,0,0,0,0}, new List<double>{1,1,1,1,1,1,1,1});
 
             RegisterEventHandlers();
         }

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HeuristicLab.Encoding.BpEa.RealVector")]
+[assembly: AssemblyTitle("HeuristicLab.Encodings.BpEa.RealVector")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HeuristicLab.Encoding.BpEa.RealVector")]
+[assembly: AssemblyProduct("HeuristicLab.Encodings.BpEa.RealVector")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

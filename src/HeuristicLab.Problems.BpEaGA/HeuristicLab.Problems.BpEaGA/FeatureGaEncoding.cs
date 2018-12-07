@@ -7,7 +7,7 @@ using HeuristicLab.Encodings.RealVectorEncoding;
 
 namespace HeuristicLab.Problems.BpEaGA
 {
-    public class FeatureGaEncoding : RealVectorEncoding
+    public class FeatureGaEncoding
     {
         public FeatureGaEncoding()
         {
