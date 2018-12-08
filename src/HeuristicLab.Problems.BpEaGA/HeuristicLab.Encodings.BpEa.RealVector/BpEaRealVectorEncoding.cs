@@ -77,9 +77,9 @@ namespace HeuristicLab.Encodings.BpEa.RealVector
             RegisterParameterEvents();
         }
 
-        public BpEaRealVectorEncoding() : this("RealVector", 10) { }
+        public BpEaRealVectorEncoding() : this("BP EA RealVector", 10) { }
         public BpEaRealVectorEncoding(string name) : this(name, 10) { }
-        public BpEaRealVectorEncoding(int length) : this("RealVector", length) { }
+        public BpEaRealVectorEncoding(int length) : this("BP EA RealVector", length) { }
         public BpEaRealVectorEncoding(string name, int length, double min = double.MinValue, double max = double.MaxValue)
           : base(name)
         {
@@ -99,19 +99,20 @@ namespace HeuristicLab.Encodings.BpEa.RealVector
             DiscoverOperators();
         }
 
-        public BpEaRealVectorEncoding(string name, int length, IList<double> min, IList<double> max)
+        public BpEaRealVectorEncoding(string name, int length, IList<double> min, IList<double> max, IList<String> featureNames)
           : base(name)
         {
             if (min.Count == 0) throw new ArgumentException("Bounds must be given for the real parameters.");
             if (min.Count != max.Count) throw new ArgumentException("min must be of the same length as max", "min");
             if (min.Zip(max, (mi, ma) => mi >= ma).Any(x => x)) throw new ArgumentException("min must be less than max in each dimension", "min");
 
-            var bounds = new DoubleMatrix(min.Count, 2);
+            DoubleMatrix bounds = new DoubleMatrix(min.Count, 2);
             for (int i = 0; i < min.Count; i++)
             {
                 bounds[i, 0] = min[i];
                 bounds[i, 1] = max[i];
             }
+            bounds.RowNames = new List<string>(featureNames);
             lengthParameter = new FixedValueParameter<IntValue>(Name + ".Length", new IntValue(length));
             boundsParameter = new ValueParameter<DoubleMatrix>(Name + ".Bounds", bounds);
             Parameters.Add(lengthParameter);

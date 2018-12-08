@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using HeuristicLab.Common;
 using HeuristicLab.Core;
 using HeuristicLab.Data;
@@ -15,10 +15,6 @@ namespace HeuristicLab.Problems.BpEaGA
     [Item("Robocode Problem", "Evolution of a robocode program in java using genetic programming.")]
     public class Problem : SingleObjectiveBasicProblem<BpEaRealVectorEncoding>
     {
-        protected ILog log;
-        public ILog Log {
-            get { return log; }
-        }
         #region Parameter Names
         private const string RobocodePathParamaterName = "RobocodePath";
         private const string NrOfRoundsParameterName = "NrOfRounds";
@@ -69,13 +65,11 @@ namespace HeuristicLab.Problems.BpEaGA
         protected Problem(Problem original, Cloner cloner)
           : base(original, cloner)
         {
-            log = cloner.Clone(original.log);
             RegisterEventHandlers();
         }
 
         public Problem()
         {
-            log = new Log();
             DirectoryValue robocodeDir = new DirectoryValue { Value = @"c:\Thesis\robocode" };
 
             EnemyCollection robotList = EnemyCollection.ReloadEnemies(robocodeDir.Value);
@@ -87,7 +81,7 @@ namespace HeuristicLab.Problems.BpEaGA
             Parameters.Add(new ValueParameter<EnemyCollection>(EnemiesParameterName, "The enemies that should be battled.", robotList));
             Parameters.Add(new ValueParameter<FeatureCollection>(FeaturesParameterName, "The enemies that should be battled.", features));
 
-            Encoding = new BpEaRealVectorEncoding("FeaturesWeights", 1, new List<double>{0,0,0,0,0,0,0,0}, new List<double>{1,1,1,1,1,1,1,1});
+            Encoding = new BpEaRealVectorEncoding("FeaturesWeights", features.Count, features.Select(f => (double)f.Min.Value).ToList(), features.Select(f => (double)f.Max.Value).ToList(), features.Select(f=>f.Name).ToList());
 
             RegisterEventHandlers();
         }
@@ -114,7 +108,7 @@ namespace HeuristicLab.Problems.BpEaGA
             RobocodePathParameter.Value.StringValue.ValueChanged += RobocodePathParameter_ValueChanged;
         }
 
-        void RobocodePathParameter_ValueChanged(object sender, EventArgs e)
+        private void RobocodePathParameter_ValueChanged(object sender, EventArgs e)
         {
             EnemiesParameter.Value.RobocodePath = RobocodePathParameter.Value.Value;
         }

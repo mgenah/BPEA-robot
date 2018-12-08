@@ -25,15 +25,17 @@ namespace HeuristicLab.Problems.BpEaGA
 
         public static FeatureCollection ReloadFeatures(DateTime time)
         {
-            FeatureCollection features = new FeatureCollection();
-            features.Add(new FeatureType(0, 1, "fire"));
-            features.Add(new FeatureType(0, 1, "power"));
-            features.Add(new FeatureType(-1, 1, "intelligence"));
-            features.Add(new FeatureType(-1, 1, "strategy"));
-            features.Add(new FeatureType(-1, 1, "completeOp"));
-            features.Add(new FeatureType(-1, 1, "ram"));
-            features.Add(new FeatureType(-1, 1, "aim"));
-            features.Add(new FeatureType(-1, 1, "avoidHit"));
+            FeatureCollection features = new FeatureCollection
+            {
+                new FeatureType(0, 1, "fire"),
+                new FeatureType(0, 1, "power"),
+                new FeatureType(0, 1, "intelligence"),
+                new FeatureType(0, 1, "strategy"),
+                new FeatureType(0, 1, "completeOp"),
+                new FeatureType(0, 1, "ram"),
+                new FeatureType(0, 1, "aim"),
+                new FeatureType(0, 1, "avoidHit")
+            };
 
             return features;
         }
