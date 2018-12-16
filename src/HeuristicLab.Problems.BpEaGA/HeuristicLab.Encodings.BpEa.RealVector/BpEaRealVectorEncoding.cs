@@ -347,14 +347,14 @@ namespace HeuristicLab.Encodings.BpEa.RealVector
 
     public static class IndividualExtensionMethods
     {
-        public static BpEaRealVector RealVector(this Individual individual)
+        public static RealVectorEncoding.RealVector BpEaRealVector(this Individual individual)
         {
             var encoding = individual.GetEncoding<BpEaRealVectorEncoding>();
-            return individual.RealVector(encoding.Name);
+            return individual.BpEaRealVector(encoding.Name);
         }
-        public static BpEaRealVector RealVector(this Individual individual, string name)
+        public static RealVectorEncoding.RealVector BpEaRealVector(this Individual individual, string name)
         {
-            return (BpEaRealVector)individual[name];
+            return (RealVectorEncoding.RealVector)individual[name];
         }
     }
 }

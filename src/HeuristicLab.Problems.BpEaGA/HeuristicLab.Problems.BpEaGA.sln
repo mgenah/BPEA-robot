@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeuristicLab.Problems.BpEaG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeuristicLab.Encodings.BpEa.RealVector", "HeuristicLab.Encodings.BpEa.RealVector\HeuristicLab.Encodings.BpEa.RealVector.csproj", "{51A67CE7-8286-4DF1-889D-2E222D585084}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessUtilsTester", "ProcessUtilsTester\ProcessUtilsTester.csproj", "{2FCEEC17-A84C-41E8-9287-6EC0E6BB1F1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{51A67CE7-8286-4DF1-889D-2E222D585084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A67CE7-8286-4DF1-889D-2E222D585084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A67CE7-8286-4DF1-889D-2E222D585084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FCEEC17-A84C-41E8-9287-6EC0E6BB1F1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FCEEC17-A84C-41E8-9287-6EC0E6BB1F1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FCEEC17-A84C-41E8-9287-6EC0E6BB1F1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FCEEC17-A84C-41E8-9287-6EC0E6BB1F1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

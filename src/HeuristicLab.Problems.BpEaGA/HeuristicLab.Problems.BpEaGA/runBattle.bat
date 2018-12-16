@@ -7,5 +7,5 @@ set robot=%1
 set enemy=%2
 set number_of_rounds=%3
 
-xcopy c:\\Thesis\\robocode\\robots\\Evaluation\* c:\Thesis\\BPEA-robot\src\BPjsRobot\target\classes\il\ac\bgu\cs\bp\bpjsrobot\BPjsRobot.data\
+xcopy c:\\Thesis\\robocode\\robots\\Evaluation\* c:\Thesis\\BPEA-robot\src\BPjsRobot\target\classes\il\ac\bgu\cs\bp\bpjsrobot\BPjsRobot.data\ /q /y > nul
 java -cp .;C:/Thesis/BPEA-robot/src/HeuristicLab.Problems.BpEa/HeuristicLab.Problems.BpEa;c:/Thesis/robocode/libs/robocode.jar;c:/Thesis/robocode/libs/robocode.core-1.9.3.3.jar;c:/Thesis/robocode/libs/picocontainer-2.14.2.jar BattleRunner %robot% c:\\Thesis\\robocode false %number_of_rounds% %enemy%

@@ -15,58 +15,15 @@ namespace HeuristicLab.Encodings.BpEa.RealVector
         protected BpEaRealVector(BpEaRealVector original, Cloner cloner) : base(original, cloner) { }
         public BpEaRealVector() : base() { }
         public BpEaRealVector(int length) : base(length) { }
-        public BpEaRealVector(int length, IRandom random, double min, double max)
-          : this(length)
-        {
-            Randomize(random, min, max);
-        }
+        public BpEaRealVector(int length, IRandom random, double min, double max) : base(length, random, min, max) { }
         public BpEaRealVector(double[] elements) : base(elements) { }
         public BpEaRealVector(DoubleArray elements)
-          : this(elements.Length)
-        {
-            for (int i = 0; i < array.Length; i++)
-                array[i] = elements[i];
-        }
+          : base(elements) { }
         public BpEaRealVector(BpEaRealVector other) : this(other.array) { }
 
         public override IDeepCloneable Clone(Cloner cloner)
         {
             return new BpEaRealVector(this, cloner);
-        }
-
-        public virtual void Randomize(IRandom random, int startIndex, int length, double min, double max)
-        {
-            double delta = max - min;
-            if (length > 0)
-            {
-                for (int i = 0; i < length; i++)
-                    array[startIndex + i] = min + delta * random.NextDouble();
-                OnReset();
-            }
-        }
-
-        public virtual void Randomize(IRandom random, int startIndex, int length, DoubleMatrix bounds)
-        {
-            if (length > 0)
-            {
-                for (int i = startIndex; i < startIndex + length; i++)
-                {
-                    double min = bounds[i % bounds.Rows, 0];
-                    double max = bounds[i % bounds.Rows, 1];
-                    array[i] = min + (max - min) * random.NextDouble();
-                }
-                OnReset();
-            }
-        }
-
-        public void Randomize(IRandom random, double min, double max)
-        {
-            Randomize(random, 0, Length, min, max);
-        }
-
-        public void Randomize(IRandom random, DoubleMatrix bounds)
-        {
-            Randomize(random, 0, Length, bounds);
         }
 
         public double DotProduct(BpEaRealVector other)

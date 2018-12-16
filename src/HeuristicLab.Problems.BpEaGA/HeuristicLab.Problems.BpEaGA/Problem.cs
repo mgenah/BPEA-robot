@@ -20,7 +20,7 @@ namespace HeuristicLab.Problems.BpEaGA
         private const string NrOfRoundsParameterName = "NrOfRounds";
         private const string EnemiesParameterName = "Enemies";
         private const string FeaturesParameterName = "Features";
-        private readonly Robot robot = new Robot("BPjsRobot", "il.ac.bgu.cs.bp.bpjsrobot.BPjsRobot_1.0");
+        private readonly Robot robot = new Robot("BPjsRobot", "il.ac.bgu.cs.bp.bpjsrobot.BPjsRobot");
 
         #endregion
 
@@ -96,7 +96,7 @@ namespace HeuristicLab.Problems.BpEaGA
 
         public override double Evaluate(Individual individual, IRandom random)
         {
-            return Interpreter.Evaluate(individual, Features, RobocodePath, robot, Enemies, null, false, NrOfRounds);
+            return Interpreter.Evaluate(individual, Features, RobocodePath, robot, Enemies.CheckedItems, null, false, NrOfRounds);
         }
 
         public override bool Maximization {

@@ -57,11 +57,16 @@ public class BattleRunner {
     	for(String r : robots) {
     		if(r.equals(rs.getClassName())) {
     			selectedRobots.add(rs);
+				break;
     		}
     	}
     }
+	anOut.println(selectedRobots.get(0).getClassName());
+	anOut.println(selectedRobots.get(1).getClassName());
+	anOut.println(selectedRobots.size());
     
     anOut.println("*********************");
+	anOut.flush();
 	anOut.close();
 
     for (int i = 1; i < selectedRobots.size(); i++) {
@@ -71,7 +76,6 @@ public class BattleRunner {
       engine.runBattle(battleSpec, true);
     }
     engine.close();
-    anOut.flush();
 
     System.out.println(avg(score));
     System.exit(0);
@@ -106,12 +110,15 @@ class BattleObserver extends BattleAdaptor {
 		res += "    ";
 	}
 	anOut.append(res+'\n');
+	anOut.append("player: " + BattleRunner.player + '\n');
 	for (robocode.BattleResults result : e.getSortedResults()) {
+		anOut.append("team leader: " + result.getTeamLeaderName()+ '\n');
+		
 		if (result.getTeamLeaderName().contains(BattleRunner.player)) {
-			anOut.append("Result of robot: " + BattleRunner.player + " " + result.getScore());
+			anOut.append("Result of robot: " + BattleRunner.player + " " + result.getScore()+ '\n');
 			robotScore = result.getScore();
 		} else {
-			anOut.append("Result of opponent: " + result.getScore());
+			anOut.append("Result of opponent: " + result.getScore()+ '\n');
 			opponentScore = result.getScore();
 		}
 	}

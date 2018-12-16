@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HeuristicLab.Collections;
+using HeuristicLab.Data;
+using HeuristicLab.Encodings.BpEa.RealVector;
 using HeuristicLab.Encodings.RealVectorEncoding;
 using HeuristicLab.Optimization;
 
@@ -12,11 +16,11 @@ namespace HeuristicLab.Problems.BpEaGA
         private static readonly object syncRoot = new object();
 
         public static double Evaluate(Individual individual, FeatureCollection features, string path, Robot robot,
-            EnemyCollection enemies, string robotName = null, bool showUI = false, int nrOfRounds = 200)
+            IEnumerable<IndexedItem<StringValue>> enemies, string robotName = null, bool showUI = false, int nrOfRounds = 200)
         {
             if (robotName == null)
                 robotName = GenerateRobotName();
-            RealVector realVector = individual.RealVector();
+            RealVector realVector = individual.BpEaRealVector();
             double[] featureWeights = realVector.ToArray();
             String indStr = "";
             for (int i = 0; i < features.Count ; i++)
@@ -28,7 +32,7 @@ namespace HeuristicLab.Problems.BpEaGA
                 }
             }
 
-            return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robot.Name, enemies.ToArray()[0].Value, robotName, nrOfRounds);
+            return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robot.FullName, enemies.ToArray()[0].Value.Value, robotName, nrOfRounds);
         }
 
         private static double RunGamesLocaly(string path, string tree, String robot, String enemy, string robotName, int nrOfRounds)
@@ -36,9 +40,12 @@ namespace HeuristicLab.Problems.BpEaGA
             string robotsPath = Path.Combine(path, "robots", "Evaluation");
             string srcRobotPath = Path.Combine(robotsPath, robotName + ".txt");
             File.WriteAllText(srcRobotPath, tree, Encoding.Default);
-            return Double.Parse(ProcessUtils.ExecuteCommand(
+            String res = ProcessUtils.ExecuteCommand(
                 @"C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA\runBattle.bat",
-                robot, enemy, ""+nrOfRounds));
+                robot, enemy, "" + nrOfRounds);
+            if (res.Equals("NaN"))
+                return -3.0;
+            return Double.Parse(res);
         }
 
         private static double RunGamesRemotely(string tree, string robotName)
@@ -46,6 +53,8 @@ namespace HeuristicLab.Problems.BpEaGA
             SshUtils.UploadFile(tree, robotName);
 
             string res = SshUtils.RunScript();
+            if (res.Equals("NaN"))
+                return -3.0;
             return Double.Parse(res);
         }
 
