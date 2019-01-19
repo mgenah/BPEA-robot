@@ -37,12 +37,12 @@ namespace HeuristicLab.Problems.BpEaGA
 
         private static double RunGamesLocaly(string path, string tree, String robot, String enemy, string robotName, int nrOfRounds)
         {
+            string robotDataDir = @"c:\Thesis\\BPEA-robot\src\BPjsRobot\target\classes\il\ac\bgu\cs\bp\bpjsrobot\BPjsRobot.data";
             string robotsPath = Path.Combine(path, "robots", "Evaluation");
-            string srcRobotPath = Path.Combine(robotsPath, robotName + ".txt");
+            string srcRobotPath = Path.Combine(robotDataDir, robotName + ".txt");
             File.WriteAllText(srcRobotPath, tree, Encoding.Default);
-            String res = ProcessUtils.ExecuteCommand(
-                @"C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA\runBattle.bat",
-                robot, enemy, "" + nrOfRounds);
+            string javaCmd = @"java -cp .;C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA;c:/thesis/robocode/libs/robocode.jar;C:/Users/meytal/.m2/repository/org/apache/commons/commons-jexl3/3.1/commons-jexl3-3.1.jar;C:/Users/meytal/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar;C:/Users/meytal/.m2/repository/com/github/bthink-bgu/BPjs/0.9.2/BPjs-0.9.2.jar;C:/Users/meytal/.m2/repository/org/mozilla/rhino/1.7.7.2/rhino-1.7.7.2.jar BattleRunner " + robot + " c:\\Thesis\\robocode false "+ nrOfRounds + " " + enemy;
+            String res = ProcessUtils.ExecuteCommand(javaCmd);
             if (res.Equals("NaN"))
                 return -3.0;
             return Double.Parse(res);

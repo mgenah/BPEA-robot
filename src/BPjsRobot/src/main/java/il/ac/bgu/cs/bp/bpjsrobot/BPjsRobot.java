@@ -57,14 +57,6 @@ public class BPjsRobot extends AdvancedRobot {
 		linearTargeting.setFieldHeight(fieldHeight);
 		linearTargeting.setFieldWidth(fieldWidth);		
 		
-		out.println("Starting to run robot");
-		try {
-			String bProgramData = getBProgramData();
-			bprog = new StringBProgram(bProgramData);
-		} catch (FileNotFoundException e1) {
-			System.out.println("Failed to find BProgram file.");
-			return;
-		}
 		File logFile = new File("c:\\temp\\robocodeRun.log");
 		PrintWriter anOut;
 		try {
@@ -72,6 +64,16 @@ public class BPjsRobot extends AdvancedRobot {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			anOut = new PrintWriter(out);
+		}
+		
+		anOut.println("Starting to run robot");
+		anOut.println("Robot dir: " + getDataDirectory().getAbsolutePath());
+		try {
+			String bProgramData = getBProgramData();
+			bprog = new StringBProgram(bProgramData);
+		} catch (FileNotFoundException e1) {
+			System.out.println("Failed to find BProgram file.");
+			return;
 		}
 
 		String policy;

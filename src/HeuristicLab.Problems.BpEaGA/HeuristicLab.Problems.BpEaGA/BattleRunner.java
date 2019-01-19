@@ -56,7 +56,9 @@ public class BattleRunner {
     	anOut.println(rs.getClassName());
     	for(String r : robots) {
     		if(r.equals(rs.getClassName())) {
-    			selectedRobots.add(rs);
+				if (!selectedRobots.contains(rs)){
+					selectedRobots.add(rs);
+				}
 				break;
     		}
     	}
