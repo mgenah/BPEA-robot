@@ -55,7 +55,7 @@
 								<artifactItem>
 									<groupId>com.github.bthink-bgu</groupId>
 									<artifactId>BPjs</artifactId>
-									<version>0.9.2</version>
+									<version>0.9.6</version>
 									<type>jar</type>
 									<overWrite>false</overWrite>
 									<outputDirectory>${project.build.directory}/classes</outputDirectory>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>com.github.bthink-bgu</groupId>
 			<artifactId>BPjs</artifactId>
-			<version>0.9.2</version>
+			<version>0.9.6</version>
 		</dependency>
 		<dependency>
             <groupId>org.mozilla</groupId>
@@ -106,14 +106,14 @@
 		<dependency>
 			<groupId>net.sf.robocode</groupId>
 			<artifactId>robocode.core</artifactId>
-			<version>1.9.3.3</version>
+			<version>1.9.3.4</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/../../../robocode/libs/robocode.core-1.9.3.3.jar</systemPath>
+			<systemPath>${basedir}/../../../robocode/libs/robocode.core-1.9.3.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.robocode</groupId>
 			<artifactId>robocode</artifactId>
-			<version>1.9.3.3</version>
+			<version>1.9.3.4</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/../../../robocode/libs/robocode.jar</systemPath>
 		</dependency>

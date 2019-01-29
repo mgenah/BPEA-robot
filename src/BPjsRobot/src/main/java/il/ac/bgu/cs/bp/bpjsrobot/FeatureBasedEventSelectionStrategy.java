@@ -14,7 +14,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
-import il.ac.bgu.cs.bp.bpjs.model.BSyncStatement;
+import il.ac.bgu.cs.bp.bpjs.model.SyncStatement;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionResult;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjsrobot.features.RobocodeFeature;
@@ -30,12 +30,12 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
 	}
 
     @Override
-    public Optional<EventSelectionResult> select(Set<BSyncStatement> statements, List<BEvent> externalEvents, Set<BEvent> selectableEvents) {
+    public Optional<EventSelectionResult> select(Set<SyncStatement> statements, List<BEvent> externalEvents, Set<BEvent> selectableEvents) {
         if (selectableEvents.isEmpty()) {
             return Optional.empty();
         }
         
-        Map<BSyncStatement, Double> statementToGrade = statements.stream()
+        Map<SyncStatement, Double> statementToGrade = statements.stream()
         		//TODO - we might want to also grade statements that are only with waitFor
         		.filter(s -> selectableEvents.containsAll(s.getRequest()) && !s.getRequest().isEmpty())
         		.collect(Collectors.toMap(s->s, s->Double.valueOf(ExpressionEvaluator.evaluate(featureBasedPolicy, getVariablesForCalculation(s)))));
@@ -46,7 +46,7 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
         	chosen = firstSelectable;
         }
         else{
-        	Entry<BSyncStatement, Double> max = statementToGrade.entrySet().stream().max((o1, o2) -> o2.getValue().compareTo(o1.getValue())).get();
+        	Entry<SyncStatement, Double> max = statementToGrade.entrySet().stream().max((o1, o2) -> o2.getValue().compareTo(o1.getValue())).get();
         	chosen = (BEvent)max.getKey().getRequest().toArray()[0];
         }
 //        System.out.println("Statements that are not blocked:");
@@ -67,7 +67,7 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
         }
     }
 
-	private Map<String, Double> getVariablesForCalculation(BSyncStatement statement) {
+	private Map<String, Double> getVariablesForCalculation(SyncStatement statement) {
 		NativeObject data = (NativeObject) statement.getData();
 		Map<String, Double> vars = new HashMap<>();
 		if (data != null){

@@ -16,7 +16,7 @@ import java.util.Vector;
 
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
-import il.ac.bgu.cs.bp.bpjs.model.SingleResourceBProgram;
+import il.ac.bgu.cs.bp.bpjs.model.ResourceBProgram;
 import il.ac.bgu.cs.bp.bpjs.model.StringBProgram;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
@@ -57,17 +57,18 @@ public class BPjsRobot extends AdvancedRobot {
 		linearTargeting.setFieldHeight(fieldHeight);
 		linearTargeting.setFieldWidth(fieldWidth);		
 		
-		File logFile = new File("c:\\temp\\robocodeRun.log");
-		PrintWriter anOut;
-		try {
-			anOut = new PrintWriter(logFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			anOut = new PrintWriter(out);
-		}
+//		File logFile = new File("c:\\temp\\robocodeRun.log");
+//		PrintWriter anOut;
+//		try {
+//			anOut = new PrintWriter(logFile);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//			anOut = new PrintWriter(out);
+//		}
 		
-		anOut.println("Starting to run robot");
-		anOut.println("Robot dir: " + getDataDirectory().getAbsolutePath());
+		out.println("Starting to run robot");
+		out.println("Robot dir: " + getDataDirectory().getAbsolutePath());
+		out.flush();
 		try {
 			String bProgramData = getBProgramData();
 			bprog = new StringBProgram(bProgramData);
@@ -83,10 +84,10 @@ public class BPjsRobot extends AdvancedRobot {
 			System.out.println("Failed to find policy file.");
 			return;
 		}
-		bprog.setEventSelectionStrategy(new LoggingEventSelectionStrategyDecorator(new FeatureBasedEventSelectionStrategy(supportedFeatures, policy), anOut));
+		bprog.setEventSelectionStrategy(new FeatureBasedEventSelectionStrategy(supportedFeatures, policy));
 		bprog.putInGlobalScope("robot", this);
 		out.println("Created bprog");
-		bprog.setDaemonMode(true);
+		bprog.setWaitForExternalEvents(true);
 		BProgramRunner runner = new BProgramRunner(bprog); 
 		runner.addListener(new RobocodeEventListener(this));
 		// go!
@@ -165,7 +166,7 @@ public class BPjsRobot extends AdvancedRobot {
 	@Override
 	public void onBattleEnded(BattleEndedEvent e){
 		if (bprog != null)
-			bprog.setDaemonMode(false);
+			bprog.setWaitForExternalEvents(false);
 	}
 	
 	public DecidedActions goTo(double x, double y) {
@@ -200,15 +201,16 @@ public class BPjsRobot extends AdvancedRobot {
 	}
 	
 	public void log(String message){
-		try(OutputStream os = new FileOutputStream(new File("c:\\temp\\robocodeRun.log"), true)){			
-			os.write(message.getBytes(), 0, message.length());
-			os.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		out.println(message);
+//		try(OutputStream os = new FileOutputStream(new File("c:\\temp\\robocodeRun.log"), true)){			
+//			os.write(message.getBytes(), 0, message.length());
+//			os.close();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }

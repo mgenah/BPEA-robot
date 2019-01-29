@@ -15,7 +15,7 @@ public class BattleRunner {
   public static String player = "Evaluation.output";    
   public static List<Double> score = new ArrayList<Double>();
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     if (args.length < 5)
       System.exit(-1);  
 
@@ -43,6 +43,7 @@ public class BattleRunner {
 		anOut = new PrintWriter(System.out);
 	}
     RobocodeEngine.setLogMessagesEnabled(false);
+	RobocodeEngine.setLogErrorsEnabled(false);
     RobocodeEngine engine = new RobocodeEngine(new java.io.File(roboCodePath));
     engine.setVisible(visible);
     engine.addBattleListener(new BattleObserver());
@@ -77,9 +78,11 @@ public class BattleRunner {
       // run our specified battle and wait till the battle finishes
       engine.runBattle(battleSpec, true);
     }
+	
+	//System.in.read();
     engine.close();
 
-    System.out.println(avg(score));
+    System.out.print(avg(score));
     System.exit(0);
   }
 

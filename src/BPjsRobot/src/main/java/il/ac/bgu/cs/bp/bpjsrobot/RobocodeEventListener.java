@@ -66,4 +66,10 @@ public class RobocodeEventListener implements BProgramRunnerListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void halted(BProgram bp) {
+		// TODO Auto-generated method stub
+		
+	}
 }
