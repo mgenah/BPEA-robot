@@ -52,3 +52,4 @@ packages/
 .pydevproject
 .recommenders
 Debug
+src/BPjsRobot/BPjsRobot.properties
