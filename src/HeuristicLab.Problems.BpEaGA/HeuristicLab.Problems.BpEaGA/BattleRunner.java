@@ -135,7 +135,7 @@ class BattleObserver extends BattleAdaptor {
     if((robotScore + opponentScore) == 0) {
       BattleRunner.score.add(0.0);
     } else {
-      BattleRunner.score.add(robotScore / (robotScore + opponentScore));
+      BattleRunner.score.add(robotScore*1.0 / (robotScore + opponentScore));
     }
   }
 }

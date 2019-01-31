@@ -49,6 +49,10 @@ var RobotDeath = bp.EventSet('', function(e) {
 	return (e instanceof BpRobotDeathEvent);
 });
 
+var MotionEvent = bp.EventSet('', function(e) {
+	return (e instanceof Ahead) || (e instanceof Back) || (e instanceof Fire);
+});
+
 bp.registerBThread("SmartRadarSpin",function() {
 	while (true){
 		if (targetIsDead){
@@ -101,6 +105,10 @@ bp.registerBThread("IsThereAny Target",function() {
 bp.registerBThread("Go To Target",function() {
 	while(true){
 		bp.log.info('Running go for target b-thread');
+		if (targetIsDead){
+			break;
+		}
+		
 		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});	
 	    targetBear=e.getData().getBearing();
 		var targetDist=e.getData().getDistance();
@@ -109,8 +117,8 @@ bp.registerBThread("Go To Target",function() {
 		
 		bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"ram",value:0.75}]});
 		bp.sync({ waitFor : Revend }, {features:[{name:"ram",value:0.75},{name:"completeOp",value:1}]});
-		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2}]});
-		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2},{name:"completeOp",value:1}]});
+		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"completeOp",value:1}]});
 		bp.sync({ request : Ahead(targetDist) }, {features:[{name:"ram",value:1}]});
 		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:1},{name:"completeOp",value:1}]});
 	}
@@ -119,6 +127,10 @@ bp.registerBThread("Go To Target",function() {
 bp.registerBThread("Ram target", function() {
 	while(true){
 		bp.log.info('Running ram target b-thread');
+		if (targetIsDead){
+			break;
+		}
+		
 		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 	    targetBear=e.getData().getBearing();
 		var targetDist=e.getData().getDistance();
@@ -127,22 +139,46 @@ bp.registerBThread("Ram target", function() {
 		
 		bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"ram",value:0.75},{name:"aim",value:0.75}]});
 		bp.sync({ waitFor : Revend }, {features:[{name:"ram",value:0.75},{name:"aim",value:0.75},{name:"completeOp",value:1}]});
-		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2}]});
-		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"power",value:0.2},{name:"completeOp",value:1}]});
+		bp.sync({ request : Back(10) }, {features:[{name:"ram",value:0.9}]});
+		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:0.9},{name:"completeOp",value:1}]});
 		bp.sync({ request : Ahead(targetDist) }, {features:[{name:"ram",value:1}]});
 		bp.sync({ waitFor : Motiend }, {features:[{name:"ram",value:1},{name:"completeOp",value:1}]});
 	}
 });
 
+bp.registerBThread("Save energy", , function() {
+	while(true){
+		bp.log.info('Running save energy b-thread');
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
+		var energy = e.getStatus().getStatus().getEnergy();
+	    if (energy< 50.0){
+	    	bp.sync({ request : Stop}, {features:[{name:"power",value:1}]});
+	    }
+	}
+});
+
+bp.registerBThread("Control energy", , function() {
+	while(true){
+		bp.log.info('Running control energy b-thread');
+		bp.sync({ waitFor : MotionEvent}, {features:[{name:"power",value:-0.8}]});
+	}
+});
+
 bp.registerBThread("Aim Target",function() {
-	var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
-    targetBear=e.getData().getBearing();
-	var targetDist=e.getData().getDistance();
-	bp.log.info("targetBear="+targetBear);
-	bp.log.info("targetDist="+targetDist);
-	
-	bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2}]});
-	bp.sync({ waitFor : Revend }, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2},{name:"completeOp",value:1}]});
+	while (true){
+		if (targetIsDead){
+			break;
+		}
+		
+		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
+	    targetBear=e.getData().getBearing();
+		var targetDist=e.getData().getDistance();
+		bp.log.info("targetBear="+targetBear);
+		bp.log.info("targetDist="+targetDist);
+		
+		bp.sync({ request : TurnRight(targetBear)}, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2}]});
+		bp.sync({ waitFor : Revend }, {features:[{name:"aim",value:1.0},{name:"fire",value:0.2},{name:"completeOp",value:1}]});
+	}
 });
 
 bp.registerBThread(function() {
@@ -154,7 +190,7 @@ bp.registerBThread(function() {
 		var e = bp.sync({ waitFor : Scanned }, {features:[{name:"intelligence",value:1}]});
 		bp.log.info('Continuing fire-on-scan b-thread');
 		var energy = e.getData().getEnergy();
-		bp.sync({ request : Fire(50.0) }, {features:[{name:"fire",value:1},{name:"power",value:0.2}]});
+		bp.sync({ request : Fire(50.0) }, {features:[{name:"fire",value:1},{name:"power",value:-0.2}]});
 	}
 });
 
@@ -178,12 +214,12 @@ bp.registerBThread("Wall Smoothing", function() {
         var targetPoint = robot.wallSmooth.calc(enemyX, enemyY, robot.getX(), robot.getY(), robot.getHeading());
 		var actions = robot.goTo(targetPoint.getX(), targetPoint.getY());
 		if (actions.Ahead != 0){
-			bp.sync({ request : Ahead(actions.Ahead) }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8}]});
-			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8},{name:"completeOp",value:1}]});
+			bp.sync({ request : Ahead(actions.Ahead) }, {features:[{name:"avoidHit",value:1}]});
+			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"completeOp",value:1}]});
 		}
 		if (actions.TurnRightRadians != 0){
-			bp.sync({ request : TurnRightRadians(actions.TurnRightRadians) }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8}]});
-			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"power",value:0.8},{name:"completeOp",value:1}]});
+			bp.sync({ request : TurnRightRadians(actions.TurnRightRadians) }, {features:[{name:"avoidHit",value:1}]});
+			bp.sync({ waitFor : Motiend }, {features:[{name:"avoidHit",value:1},{name:"completeOp",value:1}]});
 		}
 	}
 });
