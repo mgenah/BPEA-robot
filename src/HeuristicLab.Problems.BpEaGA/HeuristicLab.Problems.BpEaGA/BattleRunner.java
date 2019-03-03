@@ -42,8 +42,8 @@ public class BattleRunner {
 		e.printStackTrace();
 		anOut = new PrintWriter(System.out);
 	}
-    RobocodeEngine.setLogMessagesEnabled(false);
-	RobocodeEngine.setLogErrorsEnabled(false);
+    RobocodeEngine.setLogMessagesEnabled(true);
+	RobocodeEngine.setLogErrorsEnabled(true);
     RobocodeEngine engine = new RobocodeEngine(new java.io.File(roboCodePath));
     engine.setVisible(visible);
     engine.addBattleListener(new BattleObserver());

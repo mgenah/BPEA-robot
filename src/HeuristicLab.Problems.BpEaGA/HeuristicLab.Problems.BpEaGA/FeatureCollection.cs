@@ -27,14 +27,16 @@ namespace HeuristicLab.Problems.BpEaGA
         {
             FeatureCollection features = new FeatureCollection
             {
-                new FeatureType(0, 1, "fire"),
-                new FeatureType(0, 1, "power"),
-                new FeatureType(0, 1, "intelligence"),
-                new FeatureType(0, 1, "strategy"),
-                new FeatureType(0, 1, "completeOp"),
-                new FeatureType(0, 1, "ram"),
-                new FeatureType(0, 1, "aim"),
-                new FeatureType(0, 1, "avoidHit")
+                new FeatureType(0, 1, "energy"),
+                new FeatureType(0, 1, "velocity"),
+                new FeatureType(0, 1, "gunHeat"),
+                new FeatureType(0, 1, "bodyTurnRemaining"),
+                new FeatureType(0, 1, "radarTurnRemaining"),
+                new FeatureType(0, 1, "gunTurnRemaining"),
+                new FeatureType(0, 1, "distanceRemaining"),
+                new FeatureType(0, 1, "enemyEnergy"),
+                new FeatureType(0, 1, "enemyVelocity"),
+                new FeatureType(0, 1, "distanceToEnemy")
             };
 
             return features;

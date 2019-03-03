@@ -1,0 +1,1 @@
+0.8*energy+0.7*velocity+0.4*gunHeat+0.2*bodyTurnRemaining+0.6*radarTurnRemaining+0.75*gunTurnRemaining+0.3*distanceRemaining+0.733647821377975*enemyEnergy+0.5*enemyVelocity+0.3*distanceToEnemy

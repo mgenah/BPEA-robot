@@ -1,10 +1,11 @@
 package il.ac.bgu.cs.bp.bpjsrobot;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 
 import robocode.util.Utils;
 
-public class AntiGravity {
+public class AntiGravity implements Serializable {
 	private static Point2D.Double enemyLocation;
 	private int count;
 	private double fieldWidth;

@@ -1,112 +1,100 @@
 package il.ac.bgu.cs.bp.bpjsrobot;
 
+import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toSet;
 
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Context;
 
+import il.ac.bgu.cs.bp.bpjs.bprogramio.BProgramSyncSnapshotCloner;
+import il.ac.bgu.cs.bp.bpjs.internal.ExecutorServiceMaker;
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
+import il.ac.bgu.cs.bp.bpjs.model.BProgramSyncSnapshot;
 import il.ac.bgu.cs.bp.bpjs.model.SyncStatement;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionResult;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
+import il.ac.bgu.cs.bp.bpjs.model.eventsets.ComposableEventSet;
 import il.ac.bgu.cs.bp.bpjs.model.eventsets.EventSet;
-import il.ac.bgu.cs.bp.bpjsrobot.features.RobocodeFeature;
-import il.ac.bgu.cs.bp.bpjsrobot.mathexpressionevaluator.ExpressionEvaluator;
+import il.ac.bgu.cs.bp.bpjs.model.eventsets.EventSets;
 
 public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStrategy {
 	private String featureBasedPolicy;
-	private List<String> supportedFeatures;
+	private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
+	private ExecutorService executor;
+	private PrintStream out;
 
-	public FeatureBasedEventSelectionStrategy(List<String> supportedFeatures, String featureBasedPolicy) {
+	public FeatureBasedEventSelectionStrategy(PrintStream out, String featureBasedPolicy) {
+		this.out = out;
 		this.featureBasedPolicy = featureBasedPolicy;
-		this.supportedFeatures = supportedFeatures;
+		this.executor = ExecutorServiceMaker.makeWithName("SimulationBProgramRunner-" + INSTANCE_COUNTER.incrementAndGet());
 	}
 
-    @Override
-    public Optional<EventSelectionResult> select(Set<SyncStatement> statements, List<BEvent> externalEvents, Set<BEvent> selectableEvents) {
-        if (selectableEvents.isEmpty()) {
-            return Optional.empty();
+	@Override
+    public Set<BEvent> selectableEvents(BProgramSyncSnapshot bpss) {
+        Set<SyncStatement> statements = bpss.getStatements();
+        List<BEvent> externalEvents = bpss.getExternalEvents();
+        if ( statements.isEmpty() ) {
+            // Corner case, not sure this is even possible.
+            return externalEvents.isEmpty() ? emptySet() : singleton(externalEvents.get(0));
         }
         
-        Map<EventSet, Map<String, Double>> eventsToWaitFor = statements.stream()
-        		.filter(s -> selectableEvents.contains(s.getWaitFor()) && s.getWaitFor() != null)
-        		.collect(Collectors.toMap(s->s.getWaitFor(), s->parsStatementData(s)));
-        
-        Map<SyncStatement, Double> statementToGrade = statements.stream()
-        		.filter(s -> selectableEvents.containsAll(s.getRequest()) && !s.getRequest().isEmpty())
-        		.collect(Collectors.toMap(s->s, s->Double.valueOf(ExpressionEvaluator.evaluate(featureBasedPolicy, getVariablesForCalculation(s, eventsToWaitFor)))));
-        
-        BEvent chosen;
-        if (statementToGrade.isEmpty()){
-        	BEvent firstSelectable = (BEvent)selectableEvents.toArray()[0];
-        	chosen = firstSelectable;
-        }
-        else{
-        	Entry<SyncStatement, Double> max = statementToGrade.entrySet().stream().max((o1, o2) -> o2.getValue().compareTo(o1.getValue())).get();
-        	chosen = (BEvent)max.getKey().getRequest().toArray()[0];
-        }
-//        System.out.println("Statements that are not blocked:");
-//        statements.stream().forEach( e -> System.out.println(" + " + e));
-        
-//        System.out.println("The chosen event is: " + chosen + " because its statement had grade of: " + max.getValue());
+        EventSet blocked = ComposableEventSet.anyOf(statements.stream()
+                .filter( stmt -> stmt!=null )
+                .map(SyncStatement::getBlock )
+                .filter(r -> r != EventSets.none )
+                .collect( toSet() ) );
         
         Set<BEvent> requested = statements.stream()
                 .filter( stmt -> stmt!=null )
                 .flatMap( stmt -> stmt.getRequest().stream() )
-                .collect( Collectors.toSet() );
+                .collect( toSet() );
         
-        if (requested.contains(chosen)) {
-            return Optional.of(new EventSelectionResult(chosen));
-        } else {
-            // that was an internal event, need to find the first index 
-            return Optional.of(new EventSelectionResult(chosen, singleton(externalEvents.indexOf(chosen))));
+        // Let's see what internal events are requested and not blocked (if any).
+        try {
+            Context.enter();
+            Set<BEvent> requestedAndNotBlocked = requested.stream()
+                    .filter( req -> !blocked.contains(req) )
+                    .collect( toSet() );
+
+            out.println("external events: " + Arrays.toString(externalEvents.toArray()));
+            if (requestedAndNotBlocked.isEmpty()){
+            	return externalEvents.stream().filter( e->!blocked.contains(e) ) // No internal events requested, defer to externals.
+                        .findFirst().map( e->singleton(e) ).orElse(emptySet());
+            }
+            Map<BEvent, Double> gradedEvents = new HashMap<>();
+            requestedAndNotBlocked.forEach(event->gradedEvents.put(event, Double.valueOf(simulateTheChosenEvent(bpss, event))));
+        	Double max = gradedEvents.entrySet().stream().mapToDouble(entry->entry.getValue()).max().getAsDouble();
+            return gradedEvents.entrySet().stream().filter(entry->max.equals(entry.getValue())).map(entry->entry.getKey()).collect(Collectors.toSet());
+        } finally {
+            Context.exit();
         }
     }
-
-	private Map<String, Double> getVariablesForCalculation(SyncStatement statement, Map<EventSet, Map<String, Double>> eventsToWaitFor) {
-		Map<String, Double> vars = parsStatementData(statement);
-		
-		for (Entry<EventSet, Map<String, Double>> eventToWaitFor : eventsToWaitFor.entrySet()){
-			for (BEvent ev : statement.getRequest()){
-				if (eventToWaitFor.getKey().contains(ev)){
-					for (Entry<String, Double> featureToUpdate : eventToWaitFor.getValue().entrySet()){
-						if (vars.containsKey(featureToUpdate.getKey())){
-							String key = featureToUpdate.getKey();
-							vars.put(key, vars.get(key) + featureToUpdate.getValue());
-						}
-					}
-				}
-			}
+    
+    private double simulateTheChosenEvent(BProgramSyncSnapshot bpss, BEvent chosenEvent) {
+    	BProgramSyncSnapshot clonedSnapshot = BProgramSyncSnapshotCloner.clone(bpss);
+    	RobotState clonedState = BPjsRobot.getInstance().clone();
+    	try {
+			clonedSnapshot.triggerEvent(chosenEvent, executor, Collections.emptySet());
+			double grade = BPjsRobot.getInstance().grade(featureBasedPolicy);
+			out.println("The grade for choosing event " + chosenEvent + " is: " + grade);
+			out.println("Robot state after simulation: " + BPjsRobot.getInstance().toString());
+			out.println("Cloned Robot state after simulation: " + clonedState.toString());
+			return grade;
+		} catch (InterruptedException e) {
+			System.out.println("Simulation was interrupted");
+		} finally {
+			BPjsRobot.getInstance().update(clonedState);
 		}
-		
-		return vars;
-	}
-	
-	private Map<String, Double> parsStatementData(SyncStatement statement) {
-		NativeObject data = (NativeObject) statement.getData();
-		Map<String, Double> vars = new HashMap<>();
-		if (data != null){
-			NativeArray dataArray = (NativeArray)(data.get("features"));
-			dataArray.forEach(obj->{
-				NativeObject featureData = (NativeObject)obj;
-				String name = (String)featureData.get("name");
-				double value = (double)featureData.get("value");
-				RobocodeFeature feature = new RobocodeFeature(name, value);
-				double factorValue = feature.getValue();
-				
-				vars.put(feature.getName(), factorValue);
-				System.out.println(name+": "+value);
-			});
-		}
-		supportedFeatures.forEach(f->vars.putIfAbsent(f, 0.0));
-		return vars;
-	}
+    	return 0.0;
+    }
 }

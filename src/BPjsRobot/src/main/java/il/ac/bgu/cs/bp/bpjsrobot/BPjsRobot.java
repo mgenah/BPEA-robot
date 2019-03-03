@@ -1,25 +1,15 @@
 package il.ac.bgu.cs.bp.bpjsrobot;
 
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Scanner;
 import java.util.Vector;
 
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
-import il.ac.bgu.cs.bp.bpjs.model.ResourceBProgram;
 import il.ac.bgu.cs.bp.bpjs.model.StringBProgram;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpHitWallEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpRobotDeathEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.ScannedRobot;
@@ -31,14 +21,16 @@ import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.StatusEvent;
 import robocode.WinEvent;
+import robocode.control.RobocodeEngine;
 import robocode.util.Utils;
 
-public class BPjsRobot extends AdvancedRobot {
-	BProgram bprog;
-	public AntiGravity antiGravity;
-	public WallSmoothing wallSmooth;
-	public LinearTargeting linearTargeting;
-	public List<String> supportedFeatures = Arrays.asList("power", "fire", "intelligence", "strategy","completeOp","ram","aim","avoidHit");
+public class BPjsRobot extends AdvancedRobot implements Serializable {
+	private transient BProgram bprog;
+	public transient AntiGravity antiGravity;
+	public transient WallSmoothing wallSmooth;
+	public transient LinearTargeting linearTargeting;
+	public static RobotState uniqueRobotState = new RobotState();
+	private transient StatusEvent lastStatus = null;
 	
 	public BPjsRobot(){
 		super();
@@ -47,6 +39,10 @@ public class BPjsRobot extends AdvancedRobot {
 		linearTargeting = new LinearTargeting();
 	}
 
+	public static RobotState getInstance() {
+		return uniqueRobotState;
+	}
+	
 	public void run() {
 		double fieldWidth = getBattleFieldWidth();
 		double fieldHeight = getBattleFieldHeight();
@@ -55,7 +51,7 @@ public class BPjsRobot extends AdvancedRobot {
 		antiGravity.setFieldHeight(fieldHeight);
 		antiGravity.setFieldWidth(fieldWidth);
 		linearTargeting.setFieldHeight(fieldHeight);
-		linearTargeting.setFieldWidth(fieldWidth);		
+		linearTargeting.setFieldWidth(fieldWidth);
 		
 //		File logFile = new File("c:\\temp\\robocodeRun.log");
 //		PrintWriter anOut;
@@ -84,8 +80,10 @@ public class BPjsRobot extends AdvancedRobot {
 			System.out.println("Failed to find policy file.");
 			return;
 		}
-		bprog.setEventSelectionStrategy(new FeatureBasedEventSelectionStrategy(supportedFeatures, policy));
+		
+		bprog.setEventSelectionStrategy(new FeatureBasedEventSelectionStrategy(out, policy));
 		bprog.putInGlobalScope("robot", this);
+//		bprog.putInGlobalScope("robotState", getInstance());
 		out.println("Created bprog");
 		bprog.setWaitForExternalEvents(true);
 		BProgramRunner runner = new BProgramRunner(bprog); 
@@ -129,21 +127,24 @@ public class BPjsRobot extends AdvancedRobot {
 	
 	@Override
 	public void onStatus(StatusEvent e) {
-		if (bprog != null)
+		if (bprog != null) {
+			out.println("Got status event. turn remaining: " + e.getStatus().getTurnRemaining() + " " + e.getStatus().getTurnRemainingRadians());
 			bprog.enqueueExternalEvent(new Status(e));
+			lastStatus = e;
+		}
 	}
 
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
-		System.out.println("Scanned robot");
+		out.println("Scanned robot");
 		Vector<StatusEvent> statusEvents = getStatusEvents();
-		StatusEvent lastStatus = null;
 		if (!statusEvents.isEmpty())
 			lastStatus = statusEvents.lastElement();
 //		double absBearing = e.getBearingRadians() + getHeadingRadians();
 //		antiGravity.updateEnemyLocation(new Point2D.Double(getX()+e.getDistance()*Math.sin(absBearing),getY()+e.getDistance()*Math.cos(absBearing)));
 
 		if (bprog != null)
+			out.println("enqueuing Scanned robot event");
 			bprog.enqueueExternalEvent(new ScannedRobot(e, lastStatus));
 	}
 	

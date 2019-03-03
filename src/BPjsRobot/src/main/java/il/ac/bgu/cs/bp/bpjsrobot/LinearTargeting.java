@@ -1,10 +1,12 @@
 package il.ac.bgu.cs.bp.bpjsrobot;
 
+import java.io.Serializable;
+
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.ScannedRobot;
 import robocode.Rules;
 import robocode.ScannedRobotEvent;
 
-public class LinearTargeting {
+public class LinearTargeting implements Serializable {
 	private double fieldWidth;
 	private double fieldHeight;
 	

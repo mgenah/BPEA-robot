@@ -44,6 +44,7 @@ public class RobocodeEventListener implements BProgramRunnerListener {
 	@Override
 	public void superstepDone(BProgram bp) {
 		robot.log("before time: "+robot.getTime());
+		robot.log("radar remaining: " + BPjsRobot.getInstance().getRadarTurnRemaining());
 		robot.execute();
 		robot.log("time: "+robot.getTime());
 	}

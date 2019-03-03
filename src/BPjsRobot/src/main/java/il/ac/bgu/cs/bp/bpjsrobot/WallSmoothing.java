@@ -1,10 +1,11 @@
 package il.ac.bgu.cs.bp.bpjsrobot;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 
 import robocode.util.Utils;
 
-public final class WallSmoothing {
+public final class WallSmoothing implements Serializable {
 	private double fieldWidth;
 	private double fieldHeight;
 
