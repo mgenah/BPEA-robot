@@ -25,7 +25,7 @@ namespace HeuristicLab.Problems.BpEaGA
             String indStr = "";
             for (int i = 0; i < features.Count ; i++)
             {
-                indStr += featureWeights[0] + "*" + features.CheckedItems.ToArray()[i].Value.Name;
+                indStr += featureWeights[i] + "*" + features.CheckedItems.ToArray()[i].Value.Name;
                 if (i < features.Count - 1)
                 {
                     indStr += "+";
