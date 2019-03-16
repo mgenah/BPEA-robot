@@ -46,7 +46,9 @@ namespace HeuristicLab.Problems.BpEaGA
             String res = ProcessUtils.ExecuteCommand(javaCmd);
             if (res.Equals("NaN"))
                 return -3.0;
-            return Double.Parse(res);
+            Double evaluation = Double.Parse(res);
+            File.WriteAllText(@"c:\tmp\expResults\" + evaluation + "." + robotName, tree + " " + evaluation, Encoding.Default);
+            return evaluation;
         }
 
         private static void CleanPreviousRobotPolicy(string robotDataDir)

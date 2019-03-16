@@ -1,0 +1,9 @@
+#Robot Properties
+#Sat Aug 11 01:30:45 EDT 2012
+robot.description=mmm
+robocode.version=1.9.3.4
+robot.java.source.included=true
+robot.version=v1.0
+robot.author.name=meytal
+uuid=55ff1c5b-0c40-432d-adb5-a5f7658a4aed
+robot.classname=il.ac.bgu.cs.bp.bpjsrobot.BPjsRobot
