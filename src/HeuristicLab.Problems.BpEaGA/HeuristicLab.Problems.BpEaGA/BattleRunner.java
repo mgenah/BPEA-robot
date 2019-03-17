@@ -131,11 +131,6 @@ class BattleObserver extends BattleAdaptor {
 	anOut.flush();
 	anOut.close();
     
-    // prevent div 0 which can happen if both robots do not score
-    if((robotScore + opponentScore) == 0) {
-      BattleRunner.score.add(0.0);
-    } else {
-      BattleRunner.score.add(robotScore*1.0 / (robotScore + opponentScore));
-    }
+	BattleRunner.score.add(robotScore);
   }
 }

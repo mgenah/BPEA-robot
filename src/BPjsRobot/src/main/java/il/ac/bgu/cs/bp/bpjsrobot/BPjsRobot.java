@@ -10,6 +10,7 @@ import java.util.Vector;
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
 import il.ac.bgu.cs.bp.bpjs.model.StringBProgram;
+import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpHitWallEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpRobotDeathEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.ScannedRobot;
@@ -82,6 +83,7 @@ public class BPjsRobot extends AdvancedRobot implements Serializable {
 		}
 		
 		bprog.setEventSelectionStrategy(new FeatureBasedEventSelectionStrategy(out, policy));
+//		bprog.setEventSelectionStrategy(new SimpleEventSelectionStrategy());
 		bprog.putInGlobalScope("robot", this);
 //		bprog.putInGlobalScope("robotState", getInstance());
 		out.println("Created bprog");
@@ -136,7 +138,7 @@ public class BPjsRobot extends AdvancedRobot implements Serializable {
 
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
-		out.println("Scanned robot");
+		out.println("**********************************Scanned robot*****************************************");
 		Vector<StatusEvent> statusEvents = getStatusEvents();
 		if (!statusEvents.isEmpty())
 			lastStatus = statusEvents.lastElement();

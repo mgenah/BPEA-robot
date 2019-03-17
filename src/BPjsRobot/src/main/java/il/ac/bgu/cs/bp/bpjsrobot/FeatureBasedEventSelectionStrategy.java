@@ -5,6 +5,8 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.PrintStream;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
 
 	@Override
     public Set<BEvent> selectableEvents(BProgramSyncSnapshot bpss) {
+		out.println("starting to evaluate all possible threads: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
         Set<SyncStatement> statements = bpss.getStatements();
         List<BEvent> externalEvents = bpss.getExternalEvents();
         if ( statements.isEmpty() ) {
@@ -74,6 +77,7 @@ public class FeatureBasedEventSelectionStrategy extends SimpleEventSelectionStra
             Map<BEvent, Double> gradedEvents = new HashMap<>();
             requestedAndNotBlocked.forEach(event->gradedEvents.put(event, Double.valueOf(simulateTheChosenEvent(bpss, event))));
         	Double max = gradedEvents.entrySet().stream().mapToDouble(entry->entry.getValue()).max().getAsDouble();
+        	out.println("finished evaluating all possible threads: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
             return gradedEvents.entrySet().stream().filter(entry->max.equals(entry.getValue())).map(entry->entry.getKey()).collect(Collectors.toSet());
         } finally {
             Context.exit();
