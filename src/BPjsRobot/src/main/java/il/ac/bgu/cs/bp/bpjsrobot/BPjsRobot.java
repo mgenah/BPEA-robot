@@ -10,7 +10,6 @@ import java.util.Vector;
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
 import il.ac.bgu.cs.bp.bpjs.model.StringBProgram;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpHitWallEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.BpRobotDeathEvent;
 import il.ac.bgu.cs.bp.bpjsrobot.events.sensors.ScannedRobot;
@@ -22,7 +21,6 @@ import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.StatusEvent;
 import robocode.WinEvent;
-import robocode.control.RobocodeEngine;
 import robocode.util.Utils;
 
 public class BPjsRobot extends AdvancedRobot implements Serializable {

@@ -55,7 +55,7 @@
 								<artifactItem>
 									<groupId>com.github.bthink-bgu</groupId>
 									<artifactId>BPjs</artifactId>
-									<version>0.9.8</version>
+									<version>0.10.1</version>
 									<type>jar</type>
 									<overWrite>false</overWrite>
 									<outputDirectory>${project.build.directory}/classes</outputDirectory>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>com.github.bthink-bgu</groupId>
 			<artifactId>BPjs</artifactId>
-			<version>0.9.8</version>
+			<version>0.10.1</version>
 		</dependency>
 		<dependency>
             <groupId>org.mozilla</groupId>

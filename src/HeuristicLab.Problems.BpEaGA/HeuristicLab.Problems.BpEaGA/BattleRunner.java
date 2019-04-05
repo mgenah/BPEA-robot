@@ -42,8 +42,8 @@ public class BattleRunner {
 		e.printStackTrace();
 		anOut = new PrintWriter(System.out);
 	}
-    RobocodeEngine.setLogMessagesEnabled(true);
-	RobocodeEngine.setLogErrorsEnabled(true);
+    RobocodeEngine.setLogMessagesEnabled(false);
+	RobocodeEngine.setLogErrorsEnabled(false);
     RobocodeEngine engine = new RobocodeEngine(new java.io.File(roboCodePath));
     engine.setVisible(visible);
     engine.addBattleListener(new BattleObserver());
@@ -55,6 +55,8 @@ public class BattleRunner {
     anOut.println("Supported robots:");
     for(RobotSpecification rs : all) {
     	anOut.println(rs.getClassName());
+		anOut.println(rs.getNameAndVersion());
+		anOut.println(rs.getAuthorName());
     	for(String r : robots) {
     		if(r.equals(rs.getClassName())) {
 				if (!selectedRobots.contains(rs)){
@@ -65,7 +67,11 @@ public class BattleRunner {
     	}
     }
 	anOut.println(selectedRobots.get(0).getClassName());
+	anOut.println(selectedRobots.get(0).getNameAndVersion());
+	anOut.println(selectedRobots.get(0).getAuthorName());
 	anOut.println(selectedRobots.get(1).getClassName());
+	anOut.println(selectedRobots.get(1).getNameAndVersion());
+	anOut.println(selectedRobots.get(1).getAuthorName());
 	anOut.println(selectedRobots.size());
     
     anOut.println("*********************");

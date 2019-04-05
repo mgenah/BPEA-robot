@@ -42,11 +42,13 @@ namespace HeuristicLab.Problems.BpEaGA
             string robotsPath = Path.Combine(path, "robots", "Evaluation");
             string srcRobotPath = Path.Combine(robotDataDir, robotName + ".txt");
             File.WriteAllText(srcRobotPath, tree, Encoding.Default);
-            string javaCmd = @"java -Xmx512M -DNOSECURITY=true -Dsun.io.useCanonCaches=false -cp .;C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA;c:/thesis/robocode/libs/robocode.jar;C:/Users/meytal/.m2/repository/org/apache/commons/commons-jexl3/3.1/commons-jexl3-3.1.jar;C:/Users/meytal/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar;C:/Users/meytal/.m2/repository/com/github/bthink-bgu/BPjs/0.9.8/BPjs-0.9.8.jar;C:/Users/meytal/.m2/repository/org/mozilla/rhino/1.7.9/rhino-1.7.9.jar BattleRunner " + robot + " c:\\Thesis\\robocode false "+ nrOfRounds + " " + enemy;
+            string javaCmd = @"java -Xmx1024M -Ddebug=true -DNOSECURITY=true -Dsun.io.useCanonCaches=false -cp .;C:\Thesis\BPEA-robot\src\HeuristicLab.Problems.BpEaGA\HeuristicLab.Problems.BpEaGA;c:/thesis/robocode/libs/robocode.jar;C:/Users/meytal/.m2/repository/org/apache/commons/commons-jexl3/3.1/commons-jexl3-3.1.jar;C:/Users/meytal/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar;C:/Users/meytal/.m2/repository/com/github/bthink-bgu/BPjs/0.10.1/BPjs-0.10.1.jar;C:/Users/meytal/.m2/repository/org/mozilla/rhino/1.7.9/rhino-1.7.9.jar BattleRunner " + robot + " c:\\Thesis\\robocode false "+ nrOfRounds + " " + enemy;
             String res = ProcessUtils.ExecuteCommand(javaCmd);
             if (res.Equals("NaN"))
                 return -3.0;
-            return Double.Parse(res);
+            Double evaluation = Double.Parse(res);
+            File.WriteAllText(@"c:\tmp\expResults\" + evaluation + "." + robotName, tree + " " + evaluation, Encoding.Default);
+            return evaluation;
         }
 
         private static void CleanPreviousRobotPolicy(string robotDataDir)
