@@ -53,3 +53,8 @@ packages/
 .recommenders
 Debug
 src/BPjsRobot/BPjsRobot.properties
+src/BPjsRobot/out4/il/ac/bgu/cs/bp/bpjsrobot/BPjsRobot.data/BPEARobot.js
+src/BPjsRobot/out4/il/ac/bgu/cs/bp/bpjsrobot/BPjsRobot.data/robot36992a1cc2d4283b41a8c51c13abb11.txt
+src/BPjsRobot/out4/il/ac/bgu/cs/bp/bpjsrobot/BPjsRobot.properties
+src/BPjsRobot/out4/META-INF/MANIFEST.MF
+src/BPjsRobot/out4/org/mozilla/javascript/tools/debugger/build.xml

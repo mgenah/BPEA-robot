@@ -106,14 +106,14 @@
 		<dependency>
 			<groupId>net.sf.robocode</groupId>
 			<artifactId>robocode.core</artifactId>
-			<version>1.9.3.4</version>
+			<version>1.9.3.5</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/../../../robocode/libs/robocode.core-1.9.3.4.jar</systemPath>
+			<systemPath>${basedir}/../../../robocode/libs/robocode.core-1.9.3.5.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.robocode</groupId>
 			<artifactId>robocode</artifactId>
-			<version>1.9.3.4</version>
+			<version>1.9.3.5</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/../../../robocode/libs/robocode.jar</systemPath>
 		</dependency>
