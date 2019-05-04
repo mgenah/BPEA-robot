@@ -10,8 +10,9 @@ namespace HeuristicLab.Problems.BpEaGA
     {
         private const string SERVER = "vmsgemaster.cs.bgu.ac.il";
         private const string USER = "genahm";
-        private const string PASSWORD = "Mg165705";
+        private const string PASSWORD = "Mzuta1!@";
         private const string ROOT_DIR = "/home/cluster/users/genahm";
+        private const string RUN_DIR = "/";
 
         public static void UploadFile(string data, string tempFileName)
         {
@@ -22,13 +23,13 @@ namespace HeuristicLab.Problems.BpEaGA
 
                 using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(data ?? "")))
                 {
-                    client.Upload(ms, ROOT_DIR + "/" + tempFileName);
+                    client.Upload(ms, ROOT_DIR + "/" + tempFileName + ".txt");
                 }
             }
 
         }
 
-        public static string RunScript()
+        public static string RunScript(String dirName)
         {
             string res = "0.0";
             using (var client = new SshClient(SERVER, USER, PASSWORD))
@@ -37,28 +38,53 @@ namespace HeuristicLab.Problems.BpEaGA
                 ShellStream shellStream = client.CreateShellStream("xterm", 80, 24, 800, 600, 1024);
 
                 // Execute commands under root account
-                WriteStream("cd " + ROOT_DIR, shellStream);
+                //WriteStream("cd " + ROOT_DIR, shellStream);
+                client.CreateCommand("cd " + ROOT_DIR).Execute();
 
-                string answer = ReadStream(shellStream);
-                int index = answer.IndexOf(Environment.NewLine);
-                answer = answer.Substring(index + Environment.NewLine.Length);
-                Console.WriteLine("Command output: " + answer.Trim());
+                //string answer = ReadStream(shellStream);
+                //int index = answer.IndexOf(Environment.NewLine);
+                //answer = answer.Substring(index + Environment.NewLine.Length);
+                //Console.WriteLine("Command output: " + answer.Trim());
 
-                WriteStream("./createEnv.sh", shellStream);
-                WriteStream("/opt/sge/bin/lx-amd64/qsub -q sipper.q -cwd simple.sh", shellStream);
+                client.CreateCommand("./createEnv.sh").Execute();
+                client.CreateCommand("mkdir -p " + ROOT_DIR + "/" + dirName).Execute();
+                client.CreateCommand("chmod 777 " + ROOT_DIR + "/" + dirName).Execute();
+                //client.CreateCommand("cd " + dirName).Execute();
+                client.CreateCommand("cp -r " + ROOT_DIR + "/robocode " + ROOT_DIR + "/" + dirName + "/").Execute();
+                client.CreateCommand("cp -r " + ROOT_DIR + "/CommonLibs " + ROOT_DIR + "/" + dirName + "/").Execute();
+                client.CreateCommand("cp " + ROOT_DIR + "/" + dirName + ".txt " + ROOT_DIR + "/" + dirName + "/").Execute();
+                client.CreateCommand("cp " + ROOT_DIR + "/runRobocodeBattle.sh " + ROOT_DIR + "/" + dirName + "/").Execute();
+                client.CreateCommand("chmod 777  " + ROOT_DIR + "/" + dirName + "/CommonLibs/queueBattle.sh").Execute();
+                client.CreateCommand("chmod 777  " + ROOT_DIR + "/" + dirName + "/CommonLibs/runScript.sh").Execute();
+                //client.CreateCommand("cd CommonLibs").Execute();
+                SshCommand command = client.CreateCommand("cd " + ROOT_DIR + " / " + dirName + " /CommonLibs; ./queueBattle.sh");
 
-                answer = ReadStream(shellStream);
-                index = answer.IndexOf(Environment.NewLine);
-                answer = answer.Substring(index + Environment.NewLine.Length);
-                Console.WriteLine("Command output: " + answer.Trim());
+                command.Execute();
+                res = command.Result;
 
-                answer = ReadStream(shellStream);
-                index = answer.IndexOf(Environment.NewLine);
-                answer = answer.Substring(index + Environment.NewLine.Length);
-                res = answer.Trim();
-                Console.WriteLine("Command output: " + res);
+                //WriteStream("./createEnv.sh", shellStream);
+                //WriteStream("mkdir -p " + dirName, shellStream);
+                //WriteStream("chmod 777 " + dirName, shellStream);
+                //WriteStream("cd " + dirName, shellStream);
+                //WriteStream("cp -r " + ROOT_DIR + "/robocode .", shellStream);
+                //WriteStream("cp -r " + ROOT_DIR + "/CommonLibs .", shellStream);
+                //WriteStream("cp " + ROOT_DIR + "/"+dirName+".txt .", shellStream);
+                //WriteStream("cd CommonLibs", shellStream);
+                //WriteStream("./queueBattle", shellStream);
+                //WriteStream("/opt/sge/bin/lx-amd64/qsub -q sipper.q -cwd simple.sh", shellStream);
 
-                Console.ReadKey();
+                //answer = ReadStream(shellStream);
+                //index = answer.IndexOf(Environment.NewLine);
+                //answer = answer.Substring(index + Environment.NewLine.Length);
+                //Console.WriteLine("Command output: " + answer.Trim());
+                //
+                //answer = ReadStream(shellStream);
+                //index = answer.IndexOf(Environment.NewLine);
+                //answer = answer.Substring(index + Environment.NewLine.Length);
+                //res = answer.Trim();
+                //Console.WriteLine("Command output: " + res);
+
+                //Console.ReadKey();
                 client.Disconnect();
             }
 

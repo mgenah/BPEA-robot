@@ -32,7 +32,8 @@ namespace HeuristicLab.Problems.BpEaGA
                 }
             }
 
-            return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robot.FullName, enemies.ToArray()[0].Value.Value, robotName, nrOfRounds);
+            return RunGamesRemotely(indStr, robotName);
+            //return RunGamesLocaly(@"c:\Thesis\robocode", indStr, robot.FullName, enemies.ToArray()[0].Value.Value, robotName, nrOfRounds);
         }
 
         private static double RunGamesLocaly(string path, string tree, String robot, String enemy, string robotName, int nrOfRounds)
@@ -64,7 +65,7 @@ namespace HeuristicLab.Problems.BpEaGA
         {
             SshUtils.UploadFile(tree, robotName);
 
-            string res = SshUtils.RunScript();
+            string res = SshUtils.RunScript(robotName);
             if (res.Equals("NaN"))
                 return -3.0;
             return Double.Parse(res);
